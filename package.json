@@ -1,0 +1,24 @@
+{
+  "name": "node_department_bot",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "node js line bot",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [
+    "line"
+  ],
+  "author": "jschang19",
+  "license": "ISC",
+  "dependencies": {
+    "@google-cloud/functions-framework": "^3.2.1",
+    "@line/bot-sdk": "^7.5.2",
+    "csv-parse": "^5.4.0",
+    "csv-parser": "^3.0.0",
+    "fuse": "^0.4.0",
+    "fuse.js": "^6.6.2",
+    "mongoose": "^7.3.1"
+  }
+}
