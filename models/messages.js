@@ -1,10 +1,10 @@
 export function TextMessage(text) {
-  if(!text) throw new Error('Text Message is required')
-  else return { type: 'text', text }
+	if (!text) throw new Error('Text Message is required');
+	else return { type: 'text', text };
 }
 
-export function ResultMessage(university,extractedResults){
-  const bubble = [];
+export function ResultMessage(university, extractedResults) {
+	const bubble = [];
 	extractedResults.forEach((result, index) => {
 		const { name, numRecruit, numReview, numIsland, date, url, unewsUrl } = result;
 		const json = {
@@ -16,7 +16,7 @@ export function ResultMessage(university,extractedResults){
 				contents: [
 					{
 						type: 'text',
-						text: '🔎 科系查詢結果 ' + String(index+1),
+						text: '🔎 科系查詢結果 ' + String(index + 1),
 						weight: 'bold',
 						size: 'xl',
 						color: '#000000',
@@ -183,7 +183,7 @@ export function ResultMessage(university,extractedResults){
 						action: {
 							type: 'uri',
 							label: '去年錄取分數',
-							uri: setUniversityTWURL('regular',name)
+							uri: setUniversityTWURL('regular', name),
 						},
 						margin: 'sm',
 					},
@@ -235,9 +235,9 @@ export function ResultMessage(university,extractedResults){
 		type: 'flex',
 		altText: '個人申請科系查詢結果',
 		contents: {
-            "type": "carousel",
-            "contents": bubble
-        },
+			type: 'carousel',
+			contents: bubble,
+		},
 	};
 }
 
@@ -278,7 +278,7 @@ function setGoogleCalendarURL(date, name) {
 }
 
 function setUniversityTWURL(type, name) {
-	if (!type|| !name) {
+	if (!type || !name) {
 		throw new Error('setUniversityTW: type or name is undefined');
 	}
 	let serial_num = name.match(/\d/g);

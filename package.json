@@ -5,7 +5,8 @@
   "description": "node js line bot",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "functions-framework --target=main --port=8090"
   },
   "keywords": [
     "line"
