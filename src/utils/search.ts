@@ -2,7 +2,7 @@ import csv from "csv-parser";
 import fs from "fs";
 import Fuse from "fuse.js";
 import { University } from "@/types/university";
-import { Major, rawMajor, StarMajor } from "@/types/major";
+import { Major, rawMajor, StarMajor, rawStarMajor } from "@/types/major";
 
 export const searchInfo = async (parsedTerms: {
 	university: string;
@@ -30,8 +30,6 @@ export const parseSearchTerms = async (userMessage: string) => {
 		userMessage = removeKeywords(userMessage);
 	}
 
-	console.log("userMessage: ", userMessage);
-
 	const university = extractUniversity(userMessage);
 	const major = extractMajor(userMessage, university);
 	const universityCode = await getUniversityCode(university);
@@ -52,7 +50,7 @@ const extractUniversity = (message: string): string => {
 };
 
 const extractMajor = (message: string, university: string): string => {
-	let major = message.slice(university.length).replace("大學", "");
+	const major = message.slice(university.length).replace("大學", "");
 	const majorRegex = /學系$|系$/;
 	const match = major.match(majorRegex);
 	return match ? major.slice(0, -match[0].length) : major;
@@ -145,40 +143,41 @@ const parseMajorInfo = (
 		item: rawMajor;
 	}[]
 ): (Major | StarMajor)[] => {
-	return results.map((result: any) => {
-		switch (searchMode) {
-			case "cac":
-				return {
-					fullName: result.item.校系名稱及代碼,
-					numRecruit: result.item.招生名額,
-					numReview: result.item.預計甄試人數,
-					numIsland: result.item.離島外加名額,
-					date: result.item.指定項目甄試日期,
-					url: result.item.科系校系分則網址,
-					unewsUrl: result.item.大學問網址,
-				};
-			case "star":
-				return {
-					fullName: result.item.校系名稱及代碼,
-					numRecruit: result.item.招生名額,
-					numExtra: result.item.外加名額,
-					field: result.item.學群類別,
-					numChoice: result.item.招生名額各學群可選填志願數,
-					numExtraChoice: result.item.外加名額各學群可選填志願數,
-					url: result.item.校系分則詳細資料,
-					unewsUrl: result.item.大學問網址,
-				};
-			default: {
-				return {
-					fullName: result.item.校系名稱及代碼,
-					numRecruit: result.item.招生名額,
-					numReview: result.item.預計甄試人數,
-					numIsland: result.item.離島外加名額,
-					date: result.item.指定項目甄試日期,
-					url: result.item.科系校系分則網址,
-					unewsUrl: result.item.大學問網址,
-				} as Major;
-			}
-		}
+	switch (searchMode) {
+		case "cac":
+			return parseCacMajorInfo(results);
+		case "star":
+			return parseStarMajorInfo(results);
+		default:
+			return [];
+	}
+};
+
+const parseCacMajorInfo = (results: { item: rawMajor }[]): Major[] => {
+	return results.map(({ item }) => {
+		return {
+			fullName: item.校系名稱及代碼!,
+			numRecruit: item.招生名額!,
+			numReview: item.預計甄試人數!,
+			numIsland: item.離島外加名額!,
+			date: item.指定項目甄試日期!,
+			url: item.科系校系分則網址!,
+			unewsUrl: item.大學問網址!,
+		};
+	});
+};
+
+const parseStarMajorInfo = (results: { item: rawStarMajor }[]): StarMajor[] => {
+	return results.map(({ item }) => {
+		return {
+			fullName: item.校系名稱及代碼!,
+			numRecruit: item.招生名額!,
+			numExtra: item.外加名額!,
+			field: item.學群類別!,
+			numChoice: item.招生名額各學群可選填志願數!,
+			numExtraChoice: item.外加名額各學群可選填志願數!,
+			url: item.校系分則詳細資料!,
+			unewsUrl: item.大學問網址!,
+		};
 	});
 };
