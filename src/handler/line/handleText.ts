@@ -1,8 +1,10 @@
 import { MessageEvent, TextEventMessage, Message } from "@line/bot-sdk";
 import { parseSearchTerms, searchInfo } from "@/utils/search";
-import { ResultMessage, TextMessage } from "@/utils/line/message";
+import { ResultMessage, TextMessage, StarResultMessage } from "@/utils/line/message";
+import { MessageContent } from "@/config";
+import { Major, StarMajor } from "@/types/major";
 
-const handleText = async (event: MessageEvent): Promise<Message | null> => {
+const handleText = async (event: MessageEvent): Promise<Message | Message[] | null> => {
 	try {
 		const userMessage: string = (event.message as TextEventMessage).text;
 		const userId = event.source.userId;
@@ -12,20 +14,34 @@ const handleText = async (event: MessageEvent): Promise<Message | null> => {
 			return reply;
 		}
 		const parsedTerms = await parseSearchTerms(userMessage);
-		if (!parsedTerms.universityCode) return TextMessage("沒有這間學校的資料");
+		console.log(
+			JSON.stringify({
+				severity: "INFO",
+				message: `parsedTerms: \n${JSON.stringify(parsedTerms)}`,
+			})
+		);
+		if (!parsedTerms.universityCode) return TextMessage(MessageContent.UniversityNotFound);
 
 		const results = await searchInfo({
 			university: parsedTerms.university,
 			universityCode: parsedTerms.universityCode,
 			major: parsedTerms.major,
-			searchMode: parsedTerms.searchMode,
+			searchMode: parsedTerms.searchMode ?? "cac",
 		});
 
-		if (results.error === 1) return TextMessage("沒有這間學校的資料");
-		else if (results.error === 2) return TextMessage("沒有這個系所的資料");
+		const userSearchMode = parsedTerms.searchMode ?? "cac";
+		if (results.error === 2) return TextMessage(MessageContent.MajorNotFound);
 
-		const flexMessage = ResultMessage(results.university!, results.data!);
-		return flexMessage;
+		switch (userSearchMode) {
+			case "cac":
+				const flexMessage = ResultMessage(results.university!, results.data! as Major[]);
+				return [TextMessage(`搜尋結果：${results.data!.length} 筆`), flexMessage];
+			case "star":
+				const starFlexMessage = StarResultMessage(results.university!, results.data! as StarMajor[]);
+				return [TextMessage(`搜尋結果：${results.data!.length} 筆`), starFlexMessage];
+			default:
+				return TextMessage(MessageContent.Error.default);
+		}
 	} catch (error: unknown) {
 		console.log(
 			JSON.stringify({
@@ -33,7 +49,7 @@ const handleText = async (event: MessageEvent): Promise<Message | null> => {
 				message: `handleText error: \n${error instanceof Error ? error.message : error}`,
 			})
 		);
-		return TextMessage("發生錯誤，請稍後再試");
+		return TextMessage(MessageContent.Error.default);
 	}
 };
 

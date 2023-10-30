@@ -1,5 +1,5 @@
 import { TextMessage, FlexBubble, FlexMessage } from "@line/bot-sdk";
-import { Major } from "@/types/major";
+import { Major, StarMajor } from "@/types/major";
 
 export function TextMessage(text: string): TextMessage {
 	if (!text) throw new Error("text is empty");
@@ -240,6 +240,244 @@ export function ResultMessage(university: string, extractedResults: Major[]): Fl
 	return {
 		type: "flex",
 		altText: "個人申請科系查詢結果",
+		contents: {
+			type: "carousel",
+			contents: bubbles,
+		},
+	};
+}
+
+export function StarResultMessage(university: string, extractedResults: StarMajor[]): FlexMessage {
+	const bubbles: FlexBubble[] = extractedResults.map((result: StarMajor, index) => {
+		const { fullName, numRecruit, numExtra, field, numChoice, numExtraChoice, url, unewsUrl } = result;
+		return {
+			type: "bubble",
+			size: "mega",
+			body: {
+				type: "box",
+				layout: "vertical",
+				contents: [
+					{
+						type: "text",
+						text: `🔎 繁星查詢結果 ${index + 1}`,
+						weight: "bold",
+						size: "xl",
+						color: "#000000",
+					},
+					{
+						type: "box",
+						layout: "vertical",
+						margin: "lg",
+						spacing: "sm",
+						contents: [
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "科系名稱",
+										color: "#aaaaaa",
+										size: "sm",
+										flex: 4,
+									},
+									{
+										type: "text",
+										text: fullName,
+										wrap: true,
+										color: "#000000",
+										size: "sm",
+										flex: 5,
+										weight: "bold",
+									},
+								],
+							},
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "招生名額",
+										color: "#aaaaaa",
+										size: "sm",
+										flex: 4,
+									},
+									{
+										type: "text",
+										text: numRecruit,
+										wrap: true,
+										color: "#666666",
+										size: "sm",
+										flex: 5,
+									},
+								],
+								margin: "lg",
+							},
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "外加名額",
+										color: "#aaaaaa",
+										size: "sm",
+										flex: 4,
+									},
+									{
+										type: "text",
+										text: numExtra,
+										wrap: true,
+										color: "#666666",
+										size: "sm",
+										flex: 5,
+									},
+								],
+								margin: "lg",
+							},
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "學群類別",
+										color: "#aaaaaa",
+										size: "sm",
+										flex: 4,
+									},
+									{
+										type: "text",
+										text: field,
+										wrap: true,
+										color: "#666666",
+										size: "sm",
+										flex: 5,
+									},
+								],
+								margin: "lg",
+							},
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "各學群可選填\n志願數",
+										color: "#aaaaaa",
+										size: "sm",
+										flex: 4,
+										wrap: true,
+									},
+									{
+										type: "text",
+										text: numChoice,
+										wrap: true,
+										color: "#666666",
+										size: "sm",
+										flex: 5,
+									},
+								],
+								margin: "lg",
+							},
+							{
+								type: "box",
+								layout: "baseline",
+								spacing: "sm",
+								contents: [
+									{
+										type: "text",
+										text: "外加名額各學群\n可選填志願數",
+										color: "#aaaaaa",
+										wrap: true,
+										size: "sm",
+										flex: 4,
+									},
+									{
+										type: "text",
+										text: numExtraChoice,
+										wrap: true,
+										color: "#666666",
+										size: "sm",
+										flex: 5,
+									},
+								],
+								margin: "lg",
+							},
+						],
+					},
+				],
+			},
+			footer: {
+				type: "box",
+				layout: "vertical",
+				spacing: "sm",
+				contents: [
+					{
+						type: "button",
+						style: "link",
+						height: "sm",
+						color: "#1590fe",
+						action: {
+							type: "uri",
+							label: "查看校系分則",
+							uri: url,
+						},
+						margin: "md",
+					},
+					{
+						type: "button",
+						style: "link",
+						height: "sm",
+						color: "#1590fe",
+						action: {
+							type: "uri",
+							label: "去年錄取分數",
+							uri: setUniversityTWURL("star", fullName),
+						},
+						margin: "sm",
+					},
+					{
+						type: "button",
+						style: "link",
+						height: "sm",
+						color: "#1590fe",
+						action: {
+							type: "uri",
+							label: "大學問連結",
+							uri: unewsUrl,
+						},
+						margin: "md",
+					},
+					{
+						type: "button",
+						style: "primary",
+						height: "sm",
+						color: "#1590fe",
+						action: {
+							type: "postback",
+							label: "收藏科系",
+							displayText: "加入繁星收藏 - {department[0]}",
+							data: "star-save-",
+						},
+						margin: "md",
+					},
+				],
+				flex: 0,
+				margin: "md",
+			},
+		};
+	});
+
+	return {
+		type: "flex",
+		altText: "繁星科系查詢結果",
 		contents: {
 			type: "carousel",
 			contents: bubbles,

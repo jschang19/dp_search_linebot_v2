@@ -2,26 +2,36 @@ import csv from "csv-parser";
 import fs from "fs";
 import Fuse from "fuse.js";
 import { University } from "@/types/university";
-import { Major, rawMajor } from "@/types/major";
+import { Major, rawMajor, StarMajor } from "@/types/major";
 
 export const searchInfo = async (parsedTerms: {
 	university: string;
 	universityCode: string;
 	major: string;
-	searchMode: number;
+	searchMode: "cac" | "uac" | "star";
 }) => {
-	const { university, universityCode, major } = parsedTerms;
+	const { university, universityCode, major, searchMode } = parsedTerms;
 	if (!universityCode) return { error: 1 }; // 1: 沒有這間大學
-	const allMajors = await getAllMajors(universityCode);
+	const allMajors = await getAllMajors(searchMode, universityCode);
 	const results = filterMajors(allMajors, major);
 	if (results.length === 0) return { error: 2 }; // 2: 沒有這個系所
 	return {
 		university,
-		data: parseMajorInfo(results),
+		data: parseMajorInfo(searchMode, results),
 	};
 };
 
 export const parseSearchTerms = async (userMessage: string) => {
+	const searchMode = extractSearchMode(userMessage);
+
+	console.log("searchMode: ", searchMode);
+
+	if (searchMode) {
+		userMessage = removeKeywords(userMessage);
+	}
+
+	console.log("userMessage: ", userMessage);
+
 	const university = extractUniversity(userMessage);
 	const major = extractMajor(userMessage, university);
 	const universityCode = await getUniversityCode(university);
@@ -30,7 +40,7 @@ export const parseSearchTerms = async (userMessage: string) => {
 		university,
 		universityCode,
 		major,
-		searchMode: 1,
+		searchMode: searchMode,
 	};
 };
 
@@ -46,6 +56,45 @@ const extractMajor = (message: string, university: string): string => {
 	const majorRegex = /學系$|系$/;
 	const match = major.match(majorRegex);
 	return match ? major.slice(0, -match[0].length) : major;
+};
+
+const extractSearchMode = (message: string): "cac" | "uac" | "star" | null => {
+	// use includes instead of switch
+	if (message.includes("個申") || message.includes("個人申請")) {
+		return "cac";
+	} else if (message.includes("繁星")) {
+		return "star";
+	} else if (message.includes("分科") || message.includes("指考")) {
+		return "uac";
+	} else {
+		return null;
+	}
+};
+
+const removeKeywords = (message: string): string => {
+	const mode = extractSearchMode(message);
+	let keywords: string[] = [];
+
+	switch (mode) {
+		case "cac":
+			keywords = ["個申", "個人申請"];
+			break;
+		case "star":
+			keywords = ["繁星"];
+			break;
+		case "uac":
+			keywords = ["分科", "指考"];
+			break;
+		default:
+			return message; // 如果不匹配任何模式，則直接返回原始消息
+	}
+
+	// 從消息中移除所有關鍵字
+	for (const keyword of keywords) {
+		message = message.replace(new RegExp(keyword, "g"), "");
+	}
+
+	return message.trim(); // 返回已移除關鍵字的消息
 };
 
 const readCSV = async (path: string): Promise<unknown[]> => {
@@ -65,11 +114,11 @@ const getUniversityCode = async (university: string): Promise<string | null> => 
 	return code || null;
 };
 
-const getAllMajors = async (universityCode: string) => {
+const getAllMajors = async (searchMode: string, universityCode: string) => {
 	// open csv file with universityCode
 	// then parse the csv file to get the major info
 	// return the major info
-	const data = (await readCSV(`./data/cac/${universityCode}.csv`)) as rawMajor[];
+	const data = (await readCSV(`./data/${searchMode}/${universityCode}.csv`)) as rawMajor[];
 	return data || [];
 };
 
@@ -91,19 +140,45 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 };
 
 const parseMajorInfo = (
+	searchMode: "cac" | "uac" | "star",
 	results: {
 		item: rawMajor;
 	}[]
-): Major[] => {
+): (Major | StarMajor)[] => {
 	return results.map((result: any) => {
-		return {
-			fullName: result.item.校系名稱及代碼,
-			numRecruit: result.item.招生名額,
-			numReview: result.item.預計甄試人數,
-			numIsland: result.item.離島外加名額,
-			date: result.item.指定項目甄試日期,
-			url: result.item.科系校系分則網址,
-			unewsUrl: result.item.大學問網址,
-		};
+		switch (searchMode) {
+			case "cac":
+				return {
+					fullName: result.item.校系名稱及代碼,
+					numRecruit: result.item.招生名額,
+					numReview: result.item.預計甄試人數,
+					numIsland: result.item.離島外加名額,
+					date: result.item.指定項目甄試日期,
+					url: result.item.科系校系分則網址,
+					unewsUrl: result.item.大學問網址,
+				};
+			case "star":
+				return {
+					fullName: result.item.校系名稱及代碼,
+					numRecruit: result.item.招生名額,
+					numExtra: result.item.外加名額,
+					field: result.item.學群類別,
+					numChoice: result.item.招生名額各學群可選填志願數,
+					numExtraChoice: result.item.外加名額各學群可選填志願數,
+					url: result.item.校系分則詳細資料,
+					unewsUrl: result.item.大學問網址,
+				};
+			default: {
+				return {
+					fullName: result.item.校系名稱及代碼,
+					numRecruit: result.item.招生名額,
+					numReview: result.item.預計甄試人數,
+					numIsland: result.item.離島外加名額,
+					date: result.item.指定項目甄試日期,
+					url: result.item.科系校系分則網址,
+					unewsUrl: result.item.大學問網址,
+				} as Major;
+			}
+		}
 	});
 };
