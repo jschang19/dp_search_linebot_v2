@@ -178,7 +178,7 @@ export function ResultMessage(university: string, extractedResults: Major[]): Fl
 						action: {
 							type: "uri",
 							label: "學習歷程參採項目",
-							uri: "https://google.com", //setPortfolioURL(name)
+							uri: setPortfolioURL(fullName),
 						},
 						margin: "sm",
 					},
@@ -213,7 +213,7 @@ export function ResultMessage(university: string, extractedResults: Major[]): Fl
 						action: {
 							type: "uri",
 							label: "加入行事曆",
-							uri: "https://google.com", //setGoogleCalendarURLl(date, name)
+							uri: setGoogleCalendarURL(date, fullName),
 						},
 						margin: "md",
 					},
@@ -497,9 +497,11 @@ function setPortfolioURL(name: string) {
 		.replace("APCS組", "")
 		.replace("(資安組)", "");
 
-	return encodeURI(
+	const url = encodeURI(
 		`https://www.cac.edu.tw/cacportal/jbcrc/LearningPortfolios_MultiQuery_ppa/LPM_readfile_html.php?fileid=${school_serial_num}-${url_param}`
 	);
+
+	return url;
 }
 
 type DateRange = {
@@ -546,7 +548,6 @@ function setGoogleCalendarURL(date: string, name: string): string {
 			`https://calendar.google.com/calendar/u/0/render?action=TEMPLATE&dates=${start}T000000Z/${end}T090000Z&text=${eventTitle}`
 		);
 	}
-
 	return calendarUrl;
 }
 
@@ -554,9 +555,9 @@ function setUniversityTWURL(type: string, name: string) {
 	if (!type || !name) {
 		throw new Error("setUniversityTW: type or name is undefined");
 	}
-	let serial_num = name.match(/\d/g);
+	const serial_num = name.match(/\d/g);
 	if (!serial_num) throw new Error("serial_num is undefined");
-	let joined_serial_num = serial_num.join("");
+	const joined_serial_num = serial_num.join("");
 
 	const school_serial_num = joined_serial_num.substring(0, 3); // 學校代碼
 	switch (type) {
