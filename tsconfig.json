@@ -1,0 +1,29 @@
+{
+    "compilerOptions": {
+      "target": "es2021",
+      "baseUrl": "src/",
+      "module": "commonjs",
+      "esModuleInterop": true,
+      "strict": true,
+      "outDir": "dist",
+      "paths": {
+        "@utils/*": ["utils/*"],
+        "@handler/*": ["handlers/*"],
+        "@MessageTemplate": ["./utils/line/message/template"],
+        "@/*": ["*"]
+
+      },
+      "typeRoots": ["./types", "./node_modules/@types"],
+      "moduleResolution": "node",
+      "allowJs": true
+    },
+    "include": ["src/**/*"],
+    "exclude": ["node_modules","dist"],
+    "tsc-alias": {
+      "resolveFullPaths": true
+    },
+    "moduleDirectories": [
+      "node_modules",
+      "src"
+  ]
+  }
