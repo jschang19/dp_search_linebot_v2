@@ -8,6 +8,7 @@ gcloud functions deploy shawn_cat_line \
 --max-instances=3 \
 --entry-point=handleRequest \
 --trigger-http \
---allow-unauthenticated 
+--allow-unauthenticated \
+--no-user-output-enabled
 
 echo "Deployed to gcloud!"
