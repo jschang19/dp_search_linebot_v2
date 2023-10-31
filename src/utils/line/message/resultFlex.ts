@@ -18,7 +18,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 						type: "text",
 						text: isSaved ? "個申收藏校系" : "校系查詢結果 " + String(index + 1),
 						weight: "bold",
-						size: "xl",
+						size: "lg",
 						color: "#000000",
 					},
 					{
@@ -269,7 +269,7 @@ export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolea
 						type: "text",
 						text: isSaved ? "繁星校系收藏" : `🔎 繁星查詢結果 ${index + 1}`,
 						weight: "bold",
-						size: "xl",
+						size: "lg",
 						color: "#000000",
 					},
 					{
@@ -521,7 +521,7 @@ export function UacResultMessage(extractedResults: UacMajor[], isSaved: boolean 
 						type: "text",
 						text: isSaved ? "分科收藏" : `🔎 分科查詢結果 ${index + 1}`,
 						weight: "bold",
-						size: "xl",
+						size: "lg",
 						color: "#000000",
 					},
 					{
