@@ -97,6 +97,8 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 	const fuse = new Fuse(allMajors, options);
 	const results = fuse.search(major);
 	const filiteredResults = results.filter((item) => {
+		// A score of 0indicates a perfect match,
+		// while a score of 1 indicates a complete mismatch.
 		return item.score! < 0.2;
 	});
 
@@ -116,7 +118,9 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 	const extensiveFuse = new Fuse(allMajors, extensiveOptions);
 	const extensiveResults = extensiveFuse.search(major);
 	const extensiveFiliteredResults = extensiveResults.filter((item) => {
-		return item.score! < 0.35;
+		// A score of 0indicates a perfect match,
+		// while a score of 1 indicates a complete mismatch.
+		return item.score! <= 0.6;
 	});
 
 	// flatten the array
@@ -126,6 +130,7 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 		});
 	}
 
+	// return empty array if there are no results
 	return [];
 };
 
