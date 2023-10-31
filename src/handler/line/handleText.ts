@@ -1,49 +1,98 @@
 import { MessageEvent, TextEventMessage, Message } from "@line/bot-sdk";
-import { parseSearchTerms, searchInfo } from "@/utils/search";
-import { ResultMessage, TextMessage, StarResultMessage } from "@/utils/line/message";
+import { parseSearchTerms } from "@/utils/major/parse";
+import { searchInfo, getSavedMajorsInfo } from "@/utils/major/search";
+import { ResultMessage, StarResultMessage, UacResultMessage } from "@/utils/line/message/resultFlex";
+import { TextMessage } from "@/utils/line/message";
 import { MessageContent } from "@/config";
-import { Major, StarMajor } from "@/types/major";
+import { CacMajor, ModeOptions, StarMajor, UacMajor } from "@/types/major";
 import logMessage from "@/utils/log";
+import { getSave } from "@utils/user/saves";
+import { getPreferenceMode, updatePreferenceMode } from "@utils/user/preference";
 
 const handleText = async (event: MessageEvent): Promise<Message | Message[] | null> => {
 	try {
 		const { text: userMessage } = event.message as TextEventMessage;
+		const userId = event.source.userId!;
 
-		const parsedTerms = await parseSearchTerms(userMessage);
+		const preferenceMode = await getPreferenceMode(userId);
+		// initial search mode for first time user
+		if (!preferenceMode) {
+			await updatePreferenceMode(userId, "cac");
+		}
 
-		if (!parsedTerms.universityCode) return TextMessage(MessageContent.UniversityNotFound);
+		switch (userMessage) {
+			case "收藏":
+				return await handleGetSave(userId, preferenceMode ?? "cac");
+			default: {
+				const parsedTerms = await parseSearchTerms(userMessage);
 
-		const results = await searchInfo({
-			university: parsedTerms.university,
-			universityCode: parsedTerms.universityCode,
-			major: parsedTerms.major,
-			searchMode: parsedTerms.searchMode ?? "cac",
-		});
+				if (!parsedTerms.universityCode) return TextMessage(MessageContent.UniversityNotFound);
+				if (!parsedTerms.major) return TextMessage(MessageContent.MajorNotFound);
 
-		if (!results.university) return TextMessage(MessageContent.MajorNotFound);
+				const majorResults = await searchInfo({
+					universityCode: parsedTerms.universityCode,
+					major: parsedTerms.major,
+					searchMode: parsedTerms.searchMode ?? preferenceMode ?? "cac",
+				});
 
-		return generateResponseMessage(parsedTerms.searchMode ?? "cac", results);
+				return generateResponseMessage(parsedTerms.searchMode ?? preferenceMode ?? "cac", majorResults);
+			}
+		}
 	} catch (error: unknown) {
 		logMessage("ERROR", `handleText error: \n${error instanceof Error ? error.message : error}`);
 		return TextMessage(MessageContent.Error.default);
 	}
 };
 
-const generateResponseMessage = (
-	searchMode: string,
-	results: {
-		university: string;
-		data: (Major | StarMajor)[];
+const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
+	const countMessage = TextMessage(`搜尋結果：${results!.length} 筆`);
+
+	if (results!.length > 11) {
+		results = results!.slice(0, 11);
 	}
-) => {
-	const countMessage = TextMessage(`搜尋結果：${results.data!.length} 筆`);
 
 	switch (searchMode) {
 		case "cac":
-			return [countMessage, ResultMessage(results.university!, results.data! as Major[])];
+			return [countMessage, ResultMessage(results as CacMajor[])];
 		case "star":
-			return [countMessage, StarResultMessage(results.university!, results.data! as StarMajor[])];
+			return [countMessage, StarResultMessage(results as StarMajor[])];
+		case "uac":
+			return [countMessage, UacResultMessage(results as UacMajor[])];
 		default:
+			console.log("unexpected search mode: ", searchMode);
+			return TextMessage(MessageContent.Error.default);
+	}
+};
+
+const handleGetSave = async (userId: string, type: ModeOptions) => {
+	try {
+		const savedMajors = await getSave(userId, type);
+		if (savedMajors.length === 0) return TextMessage(MessageContent.Save.NoSavedMajor);
+		const results = await getSavedMajorsInfo(savedMajors, type);
+
+		return generateSavedResponseMessage(type, results);
+	} catch (error: unknown) {
+		logMessage("ERROR", `handleGetSave error: \n${error instanceof Error ? error.message : error}`);
+		return TextMessage(MessageContent.Error.default);
+	}
+};
+
+const generateSavedResponseMessage = (type: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
+	if (results!.length > 11) {
+		results = results!.slice(0, 11);
+	}
+
+	const isSaved = true;
+
+	switch (type) {
+		case "cac":
+			return [ResultMessage(results as CacMajor[], isSaved)];
+		case "star":
+			return [StarResultMessage(results as StarMajor[], isSaved)];
+		case "uac":
+			return [UacResultMessage(results as UacMajor[], isSaved)];
+		default:
+			console.log("unexpected search mode: ", type);
 			return TextMessage(MessageContent.Error.default);
 	}
 };
