@@ -42,7 +42,5 @@ jobs:
           service_account: "${{ secrets.WIF_SERVICE_ACCOUNT }}"
       - name: 設定 Google Cloud SDK
         uses: google-github-actions/setup-gcloud@v0
-      - name: 確認 Google Cloud SDK
-        run: gcloud info
       - name: 部署到 Google Cloud Functions
         run: yarn deploy
