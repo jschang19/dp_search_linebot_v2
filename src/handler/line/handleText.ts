@@ -8,6 +8,7 @@ import { CacMajor, ModeOptions, StarMajor, UacMajor } from "@/types/major";
 import logMessage from "@/utils/cloudFuntionLog";
 import { getSave } from "@utils/user/saves";
 import { getPreferenceMode, updatePreferenceMode } from "@utils/user/preference";
+import addSearchLog from "@utils/searchLog";
 
 const handleText = async (event: MessageEvent): Promise<Message | Message[] | null> => {
 	try {
@@ -34,6 +35,13 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 					major: parsedTerms.major,
 					searchMode: parsedTerms.searchMode ?? preferenceMode ?? "cac",
 				});
+
+				await addSearchLog(
+					userId,
+					parsedTerms.searchMode ?? preferenceMode ?? "cac",
+					userMessage,
+					majorResults.map((major) => major.code)
+				);
 
 				if (!majorResults.length) return TextMessage(MessageContent.MajorNotFound);
 
