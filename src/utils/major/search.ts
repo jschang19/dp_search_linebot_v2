@@ -87,22 +87,22 @@ const filterMajors = (allMajors: rawMajor[], major: string, type: ModeOptions) =
 	if (!allMajors || !major) {
 		throw new Error("allMajors and major are required");
 	}
-	const regexMatched = searchWithRegex(allMajors, major, "搜尋關鍵字");
-	if (regexMatched.length) return regexMatched;
+	let regexMatched = searchWithRegex(allMajors, major, "搜尋關鍵字");
 
-	const searchField = type === "uac" ? "校系名稱" : "校系名稱及代碼";
-	const regexMatchedFullName = searchWithRegex(allMajors, major, searchField);
-	return regexMatchedFullName || [];
+	if (regexMatched.length === 0) {
+		const searchField = type === "uac" ? "校系名稱" : "校系名稱及代碼";
+		regexMatched = searchWithRegex(allMajors, major, searchField);
+	}
+	return regexMatched || [];
 };
 
 const searchWithRegex = (allMajors: rawMajor[], query: string, searchField: string) => {
 	const regexPattern = query.split("").join(".*?");
 	const regex = new RegExp(regexPattern);
 
-	const matched = allMajors.filter((major) => {
+	return allMajors.filter((major) => {
 		return regex.test(major[searchField]);
 	});
-	return matched;
 };
 
 const parseMajorInfo = (
