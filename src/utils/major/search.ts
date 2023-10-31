@@ -24,6 +24,8 @@ export const searchInfo = async ({
 	const allMajors = await getAllMajors(searchMode, universityCode);
 	const results = filterMajors(allMajors, major);
 
+	if (!results.length) return [];
+
 	return parseMajorInfo(
 		searchMode,
 		results.map((r) => ({
@@ -118,9 +120,13 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 	});
 
 	// flatten the array
-	return extensiveFiliteredResults.map((result) => {
-		return result.item;
-	});
+	if (extensiveFiliteredResults.length !== 0) {
+		return extensiveFiliteredResults.map((result) => {
+			return result.item;
+		});
+	}
+
+	return [];
 };
 
 const parseMajorInfo = (

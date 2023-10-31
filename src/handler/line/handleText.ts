@@ -35,6 +35,8 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 					searchMode: parsedTerms.searchMode ?? preferenceMode ?? "cac",
 				});
 
+				if (!majorResults.length) return TextMessage(MessageContent.MajorNotFound);
+
 				return generateResponseMessage(parsedTerms.searchMode ?? preferenceMode ?? "cac", majorResults);
 			}
 		}
