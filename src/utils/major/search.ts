@@ -91,7 +91,11 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 
 	const options = {
 		includeScore: true,
-		keys: ["搜尋關鍵字"],
+		shouldSort: true,
+		tokenize: true,
+		matchAllTokens: true,
+		includeMatches: true,
+		keys: ["搜尋關鍵字", "校系名稱及代碼"],
 	};
 
 	const fuse = new Fuse(allMajors, options);
@@ -110,17 +114,10 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 		});
 	}
 
-	const extensiveOptions = {
-		includeScore: true,
-		keys: ["校系名稱及代碼"],
-	};
-
-	const extensiveFuse = new Fuse(allMajors, extensiveOptions);
-	const extensiveResults = extensiveFuse.search(major);
-	const extensiveFiliteredResults = extensiveResults.filter((item) => {
+	const extensiveFiliteredResults = results.filter((item) => {
 		// A score of 0indicates a perfect match,
 		// while a score of 1 indicates a complete mismatch.
-		return item.score! <= 0.35;
+		return item.score! <= 0.5;
 	});
 
 	// flatten the array
