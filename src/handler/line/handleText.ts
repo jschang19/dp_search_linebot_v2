@@ -1,6 +1,6 @@
 import { MessageEvent, TextEventMessage, Message } from "@line/bot-sdk";
 import { parseSearchTerms } from "@/utils/major/parse";
-import { searchInfo, getSavedMajorsInfo } from "@/utils/major/search";
+import { searchInfo, getSavedMajorsInfo, getStarRegulation } from "@/utils/major/search";
 import { ResultMessage, StarResultMessage, UacResultMessage } from "@/utils/line/message/resultFlex";
 import { TextMessage } from "@/utils/line/message";
 import { MessageContent } from "@/config";

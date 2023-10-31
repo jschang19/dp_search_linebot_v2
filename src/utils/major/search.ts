@@ -8,8 +8,10 @@ import {
 	rawUacMajor,
 	ModeOptions,
 	rawCacMajor,
+	StarRegulation,
 } from "@/types/major";
 import readCSV from "@/utils/readCsv";
+import fs from "fs";
 
 export const searchInfo = async ({
 	universityCode,
@@ -56,6 +58,18 @@ export async function getAllMajors(searchMode: ModeOptions, universityCode: stri
 		default:
 			return [];
 	}
+}
+
+export function getStarRegulation(universityCode: string) {
+	const data = fs.readFileSync(`./data/star/regulation/regulation.json`, "utf8");
+	const parsedJson: StarRegulation[] = JSON.parse(data);
+
+	return (
+		parsedJson.find((regulation) => regulation.university === universityCode) || {
+			percentage: "無資料",
+			transfer: "無資料",
+		}
+	);
 }
 
 export const getSavedMajorsInfo = async (saved: { universityId: string; majorId: string }[], type: ModeOptions) => {
