@@ -57,7 +57,7 @@ type rawStarMajor = {
 	學群類別: string;
 	招生名額各學群可選填志願數: string;
 	外加名額各學群可選填志願數: string;
-	校系分則詳細資料?: string;
+	校系分則詳細資料: string;
 	大學問網址: string;
 } & rawMajor;
 
