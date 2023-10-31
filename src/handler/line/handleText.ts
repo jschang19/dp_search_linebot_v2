@@ -88,8 +88,8 @@ const handleGetSave = async (userId: string, type: ModeOptions) => {
 };
 
 const generateSavedResponseMessage = (type: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
-	if (results!.length > 11) {
-		results = results!.slice(0, 11);
+	if (results!.length > 8) {
+		results = results!.slice(0, 8);
 	}
 
 	const isSaved = true;
