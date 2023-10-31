@@ -21,7 +21,7 @@ export const searchInfo = async ({
 	searchMode: ModeOptions;
 }) => {
 	const allMajors = await getAllMajors(searchMode, universityCode);
-	const results = filterMajors(allMajors, major, searchMode);
+	const results = filterMajors(allMajors, major);
 
 	if (!results.length) return [];
 
@@ -83,16 +83,11 @@ export const getSavedMajorsInfo = async (saved: { universityId: string; majorId:
 	}
 };
 
-const filterMajors = (allMajors: rawMajor[], major: string, type: ModeOptions) => {
+const filterMajors = (allMajors: rawMajor[], major: string) => {
 	if (!allMajors || !major) {
 		throw new Error("allMajors and major are required");
 	}
-	let regexMatched = searchWithRegex(allMajors, major, "搜尋關鍵字");
-
-	if (regexMatched.length === 0) {
-		const searchField = type === "uac" ? "校系名稱" : "校系名稱及代碼";
-		regexMatched = searchWithRegex(allMajors, major, searchField);
-	}
+	const regexMatched = searchWithRegex(allMajors, major, "搜尋關鍵字");
 	return regexMatched || [];
 };
 
