@@ -45,7 +45,7 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 };
 
 const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
-	const countMessage = TextMessage(`搜尋結果：${results!.length} 筆`);
+	const countMessage = TextMessage(`以下是找到的校系結果`);
 
 	if (results!.length > 11) {
 		results = results!.slice(0, 11);
