@@ -44,7 +44,7 @@ type rawCacMajor = {
 	招生名額: string;
 	預計甄試人數: string;
 	離島外加名額: string;
-	指定項目甄試日期?: string;
+	指定項目甄試日期: string;
 	科系校系分則網址: string;
 	大學問網址: string;
 	校系分則詳細資料: string;
