@@ -1,0 +1,48 @@
+name: Node.js CI
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 安裝 Node.js 與 yarn
+        uses: actions/setup-node@v3
+        with:
+            node-version: 20
+            cache: "yarn"
+      - name: install, lint, test
+        run: |
+              yarn install
+              yarn lint
+              yarn test
+  deploy:
+    needs: test
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: 設定 Node, yarn
+        uses: actions/setup-node@v3
+        with:
+            node-version: 20
+            cache: "yarn"
+      - name: Google Auth
+        id: auth
+        uses: "google-github-actions/auth@v0"
+        with:
+          token_format: "access_token"
+          workload_identity_provider: "${{ secrets.WIF_PROVIDER }}"
+          service_account: "${{ secrets.WIF_SERVICE_ACCOUNT }}"
+      - name: 設定 Google Cloud SDK
+        uses: google-github-actions/setup-gcloud@v0
+      - name: 確認 Google Cloud SDK
+        run: gcloud info
+      - name: 部署到 Google Cloud Functions
+        run: yarn deploy
