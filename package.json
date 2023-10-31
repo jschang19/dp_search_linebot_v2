@@ -5,9 +5,9 @@
   "main": "dist/index.js",
   "scripts": {
     "build": "tsc && tsc-alias",
-    "start": "functions-framework --target=main",
-    "prestart": "npm run build",
-    "gcp-build": "npm run build",
+    "start": "functions-framework --target=handleRequest",
+    "prestart": "yarn run build",
+    "gcp-build": "yarn run build",
     "deploy": "sh deploy.sh",
     "test": "jest",
     "clean": "tsc --build --clean",

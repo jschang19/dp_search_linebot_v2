@@ -45,4 +45,4 @@ const handleRequest = async (req: Request, res: Response): Promise<void> => {
 	}
 };
 
-http("main", handleRequest);
+http("handleRequest", handleRequest);
