@@ -5,7 +5,7 @@ import { ResultMessage, StarResultMessage, UacResultMessage } from "@/utils/line
 import { TextMessage } from "@/utils/line/message";
 import { MessageContent } from "@/config";
 import { CacMajor, ModeOptions, StarMajor, UacMajor } from "@/types/major";
-import logMessage from "@/utils/log";
+import logMessage from "@/utils/cloudFuntionLog";
 import { getSave } from "@utils/user/saves";
 import { getPreferenceMode, updatePreferenceMode } from "@utils/user/preference";
 

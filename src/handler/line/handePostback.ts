@@ -2,7 +2,7 @@ import { PostbackEvent, Message } from "@line/bot-sdk";
 import { TextMessage, QuickReplyComponent, QuickReplyMessage } from "@/utils/line/message";
 import { addSave, unSave, checkExceedLimit, checkHasSaved } from "@utils/user/saves";
 import { updatePreferenceMode } from "@utils/user/preference";
-import logMessage from "@utils/log";
+import logMessage from "@utils/cloudFuntionLog";
 import { MessageContent } from "@/config";
 
 const handlePostback = async (event: PostbackEvent): Promise<Message | Message[] | null> => {
