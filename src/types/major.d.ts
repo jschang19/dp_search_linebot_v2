@@ -7,7 +7,7 @@ type CacMajor = {
 	date: string;
 	url: string;
 	unewsUrl: string;
-	university?: string;
+	university: string;
 };
 
 type StarMajor = {
@@ -20,7 +20,7 @@ type StarMajor = {
 	field: string;
 	url: string;
 	unewsUrl: string;
-	university?: string;
+	university: string;
 };
 
 type UacMajor = {
@@ -31,7 +31,7 @@ type UacMajor = {
 	englishListening: string;
 	url: string;
 	lastYearScore: string;
-	university?: string;
+	university: string;
 };
 
 type rawMajor = {
@@ -77,4 +77,20 @@ type rawUacMajor = {
 
 type ModeOptions = "cac" | "star" | "uac";
 
-export type { CacMajor, rawMajor, StarMajor, rawStarMajor, UacMajor, rawUacMajor, ModeOptions, rawCacMajor };
+type StarRegulation = {
+	university: string;
+	percentage: string;
+	transfer: string;
+};
+
+export type {
+	CacMajor,
+	rawMajor,
+	StarMajor,
+	rawStarMajor,
+	UacMajor,
+	rawUacMajor,
+	ModeOptions,
+	rawCacMajor,
+	StarRegulation,
+};
