@@ -57,15 +57,18 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
 	const countMessage = TextMessage(`以下是找到的校系結果`);
 
-	if (results!.length > 11) {
-		results = results!.slice(0, 11);
+	if (results!.length > 7) {
+		results = results!.slice(0, 7);
 	}
 
 	switch (searchMode) {
 		case "cac":
 			return [countMessage, ResultMessage(results as CacMajor[])];
-		case "star":
-			return [countMessage, StarResultMessage(results as StarMajor[])];
+		case "star": {
+			const { percentage, transfer } = getStarRegulation(results[0].university);
+			const regulationMessage = TextMessage(`在校百分比：${percentage}\n\n轉系規定：${transfer}`);
+			return [regulationMessage, StarResultMessage(results as StarMajor[])];
+		}
 		case "uac":
 			return [countMessage, UacResultMessage(results as UacMajor[])];
 		default:
@@ -88,8 +91,8 @@ const handleGetSave = async (userId: string, type: ModeOptions) => {
 };
 
 const generateSavedResponseMessage = (type: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
-	if (results!.length > 8) {
-		results = results!.slice(0, 8);
+	if (results!.length > 12) {
+		results = results!.slice(0, 12);
 	}
 
 	const isSaved = true;
