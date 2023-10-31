@@ -120,7 +120,7 @@ const filterMajors = (allMajors: rawMajor[], major: string) => {
 	const extensiveFiliteredResults = extensiveResults.filter((item) => {
 		// A score of 0indicates a perfect match,
 		// while a score of 1 indicates a complete mismatch.
-		return item.score! <= 0.6;
+		return item.score! <= 0.35;
 	});
 
 	// flatten the array
