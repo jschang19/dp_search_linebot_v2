@@ -12,8 +12,10 @@ import addSearchLog from "@utils/searchLog";
 
 const handleText = async (event: MessageEvent): Promise<Message | Message[] | null> => {
 	try {
-		const { text: userMessage } = event.message as TextEventMessage;
+		const { text: rawUserMessage } = event.message as TextEventMessage;
 		const userId = event.source.userId!;
+		// remove all whitespace
+		const userMessage = rawUserMessage.replace(/\s+/g, "");
 
 		const preferenceMode = await getPreferenceMode(userId);
 		// initial search mode for first time user
