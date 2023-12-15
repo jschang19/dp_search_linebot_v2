@@ -38,12 +38,12 @@ jobs:
             cache: "yarn"
       - name: Google Auth
         id: auth
-        uses: "google-github-actions/auth@v0"
+        uses: "google-github-actions/auth@v4"
         with:
           token_format: "access_token"
           workload_identity_provider: "${{ secrets.WIF_PROVIDER }}"
           service_account: "${{ secrets.WIF_SERVICE_ACCOUNT }}"
       - name: 設定 Google Cloud SDK
-        uses: google-github-actions/setup-gcloud@v0
+        uses: google-github-actions/setup-gcloud@v2
       - name: 部署到 Google Cloud Functions
         run: yarn deploy
