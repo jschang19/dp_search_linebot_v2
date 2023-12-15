@@ -1,12 +1,9 @@
-function setPortfolioURL(fullName: string) {
-	const serialNum = fullName.match(/\d/g);
-	if (!serialNum) throw new Error("serialNum is undefined");
-	const joinedSerialNum = serialNum.join("");
-	const universitySerialNum = joinedSerialNum.substring(0, 3); // 學校代碼
+function setPortfolioURL(fullName: string,majorKey: string) {
+	const universitySerialNum = majorKey.substring(0, 3); // 學校代碼
 	const urlParam = fullName
 		.replace("大學", "大學-")
 		.replace(" ", "")
-		.replace(`(${joinedSerialNum})`, "")
+		.replace(`(${majorKey})`, "")
 		.replace("APCS組", "")
 		.replace("(資安組)", "");
 
@@ -64,22 +61,17 @@ function setGoogleCalendarURL(date: string, eventName: string): string {
 	return calendarUrl;
 }
 
-function setUniversityTWURL(type: string, fullName: string) {
+function setUniversityTWURL(type: string, fullName: string, majorKey: string) {
 	if (!type || !fullName) {
 		throw new Error("setUniversityTW: type or name is undefined");
 	}
-	const serialNum = fullName.match(/\d/g);
-	if (!serialNum) throw new Error("serialNum is undefined");
-	const joinedSerialNum = serialNum.join("");
 
-	if (joinedSerialNum.length < 5) throw new Error("serialNum is too short");
-
-	const universitySerialNum = joinedSerialNum.substring(0, 3); // 學校代碼
+	const universitySerialNum = majorKey.substring(0, 3); // 學校代碼
 	switch (type) {
 		case "cac":
-			return encodeURI(`https://university-tw.ldkrsi.men/caac/${universitySerialNum}/${joinedSerialNum}`);
+			return encodeURI(`https://university-tw.ldkrsi.men/caac/${universitySerialNum}/${majorKey}`);
 		case "star":
-			return encodeURI(`https://university-tw.ldkrsi.men/star/${universitySerialNum}/${joinedSerialNum}`);
+			return encodeURI(`https://university-tw.ldkrsi.men/star/${universitySerialNum}/${majorKey}`);
 		default:
 			return encodeURI("https://university-tw.ldkrsi.men/");
 	}

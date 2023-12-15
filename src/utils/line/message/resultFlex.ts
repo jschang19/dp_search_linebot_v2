@@ -5,7 +5,7 @@ import { ColorScheme } from "@/config";
 
 export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = false): FlexMessage {
 	const bubbles: FlexBubble[] = extractedResults.map((result: CacMajor, index) => {
-		const { university, code, fullName, numRecruit, numReview, numIsland, date, url, unewsUrl } = result;
+		const { university, key, fullName, numRecruit, numReview, numOutlying, date, url } = result;
 
 		return {
 			type: "bubble",
@@ -110,7 +110,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 									},
 									{
 										type: "text",
-										text: numIsland,
+										text: numOutlying,
 										wrap: true,
 										color: "#666666",
 										size: "sm",
@@ -171,7 +171,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 						action: {
 							type: "uri",
 							label: "學習歷程參採項目",
-							uri: setPortfolioURL(fullName),
+							uri: setPortfolioURL(fullName, key),
 						},
 						margin: "sm",
 					},
@@ -183,21 +183,9 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 						action: {
 							type: "uri",
 							label: "去年錄取分數",
-							uri: setUniversityTWURL("cac", fullName),
+							uri: setUniversityTWURL("cac", fullName,  key),
 						},
 						margin: "sm",
-					},
-					{
-						type: "button",
-						style: "link",
-						height: "sm",
-						color: ColorScheme.primary,
-						action: {
-							type: "uri",
-							label: "大學問連結",
-							uri: unewsUrl,
-						},
-						margin: "md",
 					},
 					{
 						type: "button",
@@ -218,7 +206,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 								action: {
 									type: "postback",
 									label: "取消收藏",
-									data: "unsave-cac-" + university + "-" + code,
+									data: "unsave-cac-" + university + "-" + key,
 									displayText: "取消個申收藏 - " + fullName,
 								},
 								margin: "md",
@@ -232,7 +220,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 								action: {
 									type: "postback",
 									label: "收藏校系",
-									data: "save-cac-" + university + "-" + code,
+									data: "save-cac-" + university + "-" + key,
 									displayText: "加入個申收藏 - " + fullName,
 								},
 								// eslint-disable-next-line no-mixed-spaces-and-tabs
@@ -256,7 +244,7 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 
 export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolean = false): FlexMessage {
 	const bubbles: FlexBubble[] = extractedResults.map((result: StarMajor, index) => {
-		const { university, code, fullName, numRecruit, numExtra, field, numChoice, numExtraChoice, url, unewsUrl } =
+		const { university, key, fullName, numRecruit, numExtra, field, numChoice, numExtraChoice, url } =
 			result;
 		return {
 			type: "bubble",
@@ -447,21 +435,9 @@ export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolea
 						action: {
 							type: "uri",
 							label: "去年錄取分數",
-							uri: setUniversityTWURL("star", fullName),
+							uri: setUniversityTWURL("star", fullName,  key),
 						},
 						margin: "sm",
-					},
-					{
-						type: "button",
-						style: "link",
-						height: "sm",
-						color: ColorScheme.primary,
-						action: {
-							type: "uri",
-							label: "大學問連結",
-							uri: unewsUrl,
-						},
-						margin: "md",
 					},
 					isSaved
 						? {
@@ -472,7 +448,7 @@ export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolea
 									type: "postback",
 									label: "取消收藏",
 									displayText: "取消繁星收藏 - " + fullName,
-									data: "unsave-star-" + university + "-" + code,
+									data: "unsave-star-" + university + "-" + key,
 								},
 								margin: "md",
 								// eslint-disable-next-line no-mixed-spaces-and-tabs
@@ -486,7 +462,7 @@ export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolea
 									type: "postback",
 									label: "收藏校系",
 									displayText: "加入繁星收藏 - " + fullName,
-									data: "save-star-" + university + "-" + code,
+									data: "save-star-" + university + "-" + key,
 								},
 								margin: "md",
 								// eslint-disable-next-line no-mixed-spaces-and-tabs
@@ -510,7 +486,7 @@ export function StarResultMessage(extractedResults: StarMajor[], isSaved: boolea
 
 export function UacResultMessage(extractedResults: UacMajor[], isSaved: boolean = false): FlexMessage {
 	const bubbles: FlexBubble[] = extractedResults.map((result: UacMajor, index) => {
-		const { university, code, fullName, orders, referScore, englishListening, url, lastYearScore } = result;
+		const { university, key, fullName, orders, referScore, englishListening, url, lastYearScore } = result;
 		return {
 			type: "bubble",
 			body: {
@@ -767,7 +743,7 @@ export function UacResultMessage(extractedResults: UacMajor[], isSaved: boolean 
 								action: {
 									type: "postback",
 									label: "取消收藏",
-									data: "unsave-uac-" + university + "-" + code,
+									data: "unsave-uac-" + university + "-" + key,
 									displayText: "取消分科收藏 - " + fullName,
 								},
 								// eslint-disable-next-line no-mixed-spaces-and-tabs
@@ -779,7 +755,7 @@ export function UacResultMessage(extractedResults: UacMajor[], isSaved: boolean 
 								action: {
 									type: "postback",
 									label: "加入收藏",
-									data: "save-uac-" + university + "-" + code,
+									data: "save-uac-" + university + "-" + key,
 									displayText: "加入分科收藏 - " + fullName,
 								},
 								color: ColorScheme.primary,
