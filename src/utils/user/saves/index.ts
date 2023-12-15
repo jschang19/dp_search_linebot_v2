@@ -36,7 +36,7 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 	else if ( type === "uac"){
 		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id, university_id, uac_majors(*)")
+			.select("major_id, university_id")
 			.eq("line_id", userId)
 			.eq("type", type);
 
