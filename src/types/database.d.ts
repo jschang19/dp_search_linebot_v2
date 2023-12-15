@@ -211,23 +211,23 @@ export interface Database {
         Row: {
           created_at: string
           line_id: string
-          major_id: string
-          type: string | null
-          university_id: string
+          major_key: string
+          type: Database["public"]["Enums"]["line_search_mode"] | null
+          university_code: string
         }
         Insert: {
           created_at?: string
           line_id: string
-          major_id: string
-          type?: string | null
-          university_id: string
+          major_key: string
+          type?: Database["public"]["Enums"]["line_search_mode"] | null
+          university_code: string
         }
         Update: {
           created_at?: string
           line_id?: string
-          major_id?: string
-          type?: string | null
-          university_id?: string
+          major_key?: string
+          type?: Database["public"]["Enums"]["line_search_mode"] | null
+          university_code?: string
         }
         Relationships: []
       }
@@ -247,15 +247,7 @@ export interface Database {
           key?: string
           university_code?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "majors_university_code_fkey"
-            columns: ["university_code"]
-            isOneToOne: false
-            referencedRelation: "universities"
-            referencedColumns: ["code"]
-          }
-        ]
+        Relationships: []
       }
       profiles: {
         Row: {
@@ -433,15 +425,7 @@ export interface Database {
           transfer_rule?: string
           university_code?: string
         }
-        Relationships: [
-          {
-            foreignKeyName: "star_rules_university_code_fkey"
-            columns: ["university_code"]
-            isOneToOne: true
-            referencedRelation: "universities"
-            referencedColumns: ["code"]
-          }
-        ]
+        Relationships: []
       }
       uac_majors: {
         Row: {
@@ -504,16 +488,19 @@ export interface Database {
           code: string
           full_name: string | null
           key: string
+          search_words: string
         }
         Insert: {
           code: string
           full_name?: string | null
           key: string
+          search_words: string
         }
         Update: {
           code?: string
           full_name?: string | null
           key?: string
+          search_words?: string
         }
         Relationships: []
       }

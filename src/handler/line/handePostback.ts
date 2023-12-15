@@ -28,8 +28,8 @@ const handleAddSave = async (userId: string, userPostback: string) => {
 	try {
 		if (!userId) throw new Error("userId is undefined in handleSave");
 
-		const [, type, university, majorId] = userPostback.split("-");
-		const [exceedLimit, hasSaved] = await Promise.all([checkExceedLimit(userId), checkHasSaved(userId, majorId)]);
+		const [, type, university, majorKey] = userPostback.split("-");
+		const [exceedLimit, hasSaved] = await Promise.all([checkExceedLimit(userId), checkHasSaved(userId, majorKey)]);
 
 		if (exceedLimit) {
 			const quickItem = QuickReplyComponent("查看收藏", "收藏");
@@ -42,9 +42,9 @@ const handleAddSave = async (userId: string, userPostback: string) => {
 		}
 
 		await addSave(userId, {
-			majorId,
-			universityId: university,
-			type,
+			majorKey,
+			universityCode: university,
+			type: type as ModeOptions,
 		});
 		return TextMessage(MessageContent.Save.Success);
 	} catch (error: unknown) {
@@ -54,16 +54,16 @@ const handleAddSave = async (userId: string, userPostback: string) => {
 };
 
 const handleUnsave = async (userId: string, userPostback: string) => {
-	const [, type, university, majorId] = userPostback.split("-");
+	const [, type, university, majorKey] = userPostback.split("-");
 
-	const hasSaved = await checkHasSaved(userId, majorId);
+	const hasSaved = await checkHasSaved(userId, majorKey);
 
 	if (!hasSaved) return TextMessage(MessageContent.Save.HaventSaved);
 
 	await unSave(userId, {
-		majorId,
-		universityId: university,
-		type,
+		majorKey: majorKey,
+		universityCode: university,
+		type: type as ModeOptions,
 	});
 
 	return TextMessage(MessageContent.Save.Removed);

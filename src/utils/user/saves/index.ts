@@ -6,7 +6,7 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 	if( type === "cac"){
 		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id")
+			.select("major_key")
 			.eq("line_id", userId)
 			.eq("type", type);
 
@@ -14,14 +14,14 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		const { data } = await supabase.from('cac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		const { data } = await supabase.from('cac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_key));
 		return data as unknown as RawCacMajor[];
 	}
 
 	else if( type === "star"){
 		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id")
+			.select("major_key")
 			.eq("line_id", userId)
 			.eq("type", type);
 
@@ -29,14 +29,14 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		const { data } = await supabase.from('star_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		const { data } = await supabase.from('star_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_key));
 		return data as unknown as RawStarMajor[];
 	}
 
 	else if ( type === "uac"){
 		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id, university_id")
+			.select("major_key")
 			.eq("line_id", userId)
 			.eq("type", type);
 
@@ -44,7 +44,7 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		const { data } = await supabase.from('uac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		const { data } = await supabase.from('uac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_key));
 		return data as unknown as RawUacMajor[];
 	}
 
@@ -58,8 +58,8 @@ async function addSave(userId: string, saveData: SavedData) {
 		.from("line_user_savelists")
 		.upsert({
 			line_id: userId,
-			major_id: saveData.majorId,
-			university_id: saveData.universityId,
+			major_key: saveData.majorKey,
+			university_code: saveData.universityCode,
 			type: saveData.type,
 		})
 		.select("*");
@@ -76,7 +76,7 @@ async function unSave(userId: string, saveData: SavedData) {
 		.from("line_user_savelists")
 		.delete()
 		.eq("line_id", userId)
-		.eq("major_id", saveData.majorId);
+		.eq("major_key", saveData.majorKey);
 
 	if (error) {
 		throw error;
@@ -85,12 +85,12 @@ async function unSave(userId: string, saveData: SavedData) {
 	return data;
 }
 
-async function checkHasSaved(userId: string, majorId: string) {
+async function checkHasSaved(userId: string, majorKey: string) {
 	const { data, error } = await supabase
 		.from("line_user_savelists")
-		.select("university_id, major_id")
+		.select("university_code, major_key")
 		.eq("line_id", userId)
-		.eq("major_id", majorId);
+		.eq("major_key", majorKey);
 
 	if (error) {
 		throw error;
@@ -102,7 +102,7 @@ async function checkHasSaved(userId: string, majorId: string) {
 async function checkExceedLimit(userId: string) {
 	const { data, error } = await supabase
 		.from("line_user_savelists")
-		.select("university_id, major_id")
+		.select("university_code, major_key")
 		.eq("line_id", userId);
 
 	if (error) {

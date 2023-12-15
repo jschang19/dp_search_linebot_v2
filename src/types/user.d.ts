@@ -5,9 +5,9 @@ type UserProfile = {
 };
 
 type SavedData = {
-	universityId: string;
-	majorId: string;
-	type: string;
+	universityCode: string;
+	majorKey: string;
+	type: 'cac' | 'star' | 'uac';
 };
 
 export type { UserProfile, SavedData };

@@ -5,14 +5,14 @@ export default async function addSearchLog(
 	userId: string,
 	searchMode: ModeOptions,
 	searchKeyword: string,
-	majorIds: string[]
+	majorKeys: string[]
 ) {
 	const { error } = await supabase.from("line_search_log").insert([
 		{
 			line_id: userId,
 			type: searchMode,
 			keyword: searchKeyword,
-			major_ids: majorIds.length > 0 ? majorIds : null,
+			major_Keys: majorKeys.length > 0 ? majorKeys : null,
 		},
 	]);
 
