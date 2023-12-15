@@ -69,16 +69,17 @@ export async function getAllMajors(searchMode: ModeOptions, universityCode: stri
 	}
 }
 
-export function getStarRegulation(universityCode: string) {
-	const data = fs.readFileSync(`./data/star/regulation/regulation.json`, "utf8");
-	const parsedJson: StarRegulation[] = JSON.parse(data);
-
-	return (
-		parsedJson.find((regulation) => regulation.university === universityCode) || {
-			percentage: "無資料",
-			transfer: "無資料",
-		}
-	);
+export async function getStarRegulation(universityCode: string): Promise<StarRegulation> {
+	const { data, error } = await supabase.from("star_rules").select("*").eq("university_code", universityCode).maybeSingle();
+	if(error){
+		console.error("Error fetching star regulation:", error);
+		throw error;
+	}
+	if(!data){
+		console.error("Error fetching star regulation: no data");
+		throw new Error("Error fetching star regulation: no data");
+	}
+	return data;
 }
 
 export function parseSavedMajor (saved: RawCacMajor[] | RawStarMajor[] | RawUacMajor[], type: ModeOptions) {

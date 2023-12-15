@@ -56,7 +56,7 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 	}
 };
 
-const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
+const generateResponseMessage = async (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
 	const countMessage = TextMessage(`以下是找到的校系結果`);
 
 	if (results!.length > 7) {
@@ -67,8 +67,8 @@ const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMa
 		case "cac":
 			return [countMessage, ResultMessage(results as CacMajor[])];
 		case "star": {
-			const { percentage, transfer } = getStarRegulation(results[0].university);
-			const regulationMessage = TextMessage(`在校百分比：${percentage}\n\n轉系規定：${transfer}`);
+			const { rank, transfer_rule } = await getStarRegulation(results[0].university);
+			const regulationMessage = TextMessage(`在校百分比：${rank}\n\n轉系規定：${transfer_rule}`);
 			return [regulationMessage, StarResultMessage(results as StarMajor[])];
 		}
 		case "uac":
