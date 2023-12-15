@@ -1,17 +1,18 @@
 import { University } from "@/types/university";
 import {
+	BaseRawMajor,
 	CacMajor,
-	rawMajor,
 	StarMajor,
-	rawStarMajor,
+	RawStarMajor,
 	UacMajor,
-	rawUacMajor,
+	RawUacMajor,
 	ModeOptions,
-	rawCacMajor,
+	RawCacMajor,
 	StarRegulation,
 } from "@/types/major";
 import readCSV from "@/utils/readCsv";
 import fs from "fs";
+import supabase from "@/utils/supabase/createClient";
 
 export const searchInfo = async ({
 	universityCode,
@@ -23,17 +24,24 @@ export const searchInfo = async ({
 	searchMode: ModeOptions;
 }) => {
 	const allMajors = await getAllMajors(searchMode, universityCode);
+
+	// 这里可以根据实际情况添加类型检查
+    if (!Array.isArray(allMajors) || allMajors.length === 0) {
+        return [];
+    }
+
 	const results = filterMajors(allMajors, major);
 
-	if (!results.length) return [];
-
-	return parseMajorInfo(
-		searchMode,
-		results.map((r) => ({
-			...r,
-			university: universityCode,
-		}))
-	);
+	if (searchMode === "cac") {
+		return parseCacMajorInfo(results as RawCacMajor[]);
+	}
+	if (searchMode === "star") {
+		return parseStarMajorInfo(results as RawStarMajor[]);
+	}
+	if (searchMode === "uac") {
+		return parseUacMajorInfo(results as RawUacMajor[]);
+	}
+	return [];
 };
 
 export const getUniversityCode = async (university: string): Promise<string | null> => {
@@ -45,18 +53,19 @@ export const getUniversityCode = async (university: string): Promise<string | nu
 export async function getAllMajors(searchMode: ModeOptions, universityCode: string) {
 	// open csv file with universityCode
 	// then parse the csv file to get the major info
-	const data: rawMajor[] = (await readCSV(`./data/${searchMode}/${universityCode}.csv`)) as rawMajor[];
-
-	// return different type of major info based on searchMode
 	switch (searchMode) {
-		case "cac":
-			return data as rawCacMajor[];
-		case "star":
-			return data as rawStarMajor[];
-		case "uac":
-			return data as rawUacMajor[];
-		default:
-			return [];
+		case "cac":{
+			const { data } = await supabase.from('cac_majors').select("*, universities(full_name)").eq('university_code', universityCode);
+			return data as RawCacMajor[];
+		}
+		case "star":{
+			const { data } = await supabase.from('star_majors').select("*, universities(full_name)").eq('university_code', universityCode);
+			return data as RawStarMajor[];
+		}
+		case "uac":{
+			const { data } = await supabase.from('uac_majors').select("*, universities(full_name)").eq('university_code', universityCode);
+			return data as RawUacMajor[];
+		}
 	}
 }
 
@@ -72,110 +81,95 @@ export function getStarRegulation(universityCode: string) {
 	);
 }
 
-export const getSavedMajorsInfo = async (saved: { universityId: string; majorId: string }[], type: ModeOptions) => {
+export function parseSavedMajor (saved: RawCacMajor[] | RawStarMajor[] | RawUacMajor[], type: ModeOptions) {
 	// Return early if there are no saved majors.
 	if (!saved.length) return [];
 
 	try {
-		const majorPromises = saved.map(async ({ universityId, majorId }) => {
-			const allMajors = await getAllMajors(type, universityId);
-			const major = allMajors.find((major) =>
-				(type === "uac" ? major["校系代碼"] : major["校系名稱及代碼"]).includes(majorId)
-			);
-
-			return major ? { ...major, university: universityId } : null;
-		});
-
-		const allResults = await Promise.all(majorPromises);
-		// remove null values
-		const validResults = allResults.filter(Boolean) as rawMajor[];
-
-		return parseMajorInfo(type, validResults);
+		if( type === "cac"){
+			return parseCacMajorInfo(saved as RawCacMajor[])
+		}
+		else if( type === "star"){
+			return parseStarMajorInfo(saved as RawStarMajor[])
+		}
+		else if ( type === "uac"){
+			return parseUacMajorInfo(saved as RawUacMajor[])
+		}
+		else{
+			return [];
+		}
 	} catch (error) {
 		console.error("Error fetching saved majors:", error);
 		return [];
 	}
-};
+}
 
-const filterMajors = (allMajors: rawMajor[], major: string) => {
-	if (!allMajors || !major) {
-		throw new Error("allMajors and major are required");
-	}
-	const regexMatched = searchWithRegex(allMajors, major, "搜尋關鍵字");
-	return regexMatched || [];
-};
+function filterMajors(
+    allMajors: BaseRawMajor[],
+    major: string
+) {
+    if (!allMajors || !major) {
+        throw new Error("allMajors and major are required");
+    }
+    const regexMatched = searchWithRegex(allMajors, major);
+    return regexMatched || [];
+}
 
-const searchWithRegex = (allMajors: rawMajor[], query: string, searchField: string) => {
-	const regexPattern = query.split("").join(".*?");
-	const regex = new RegExp(regexPattern);
+// 函数实现
+function searchWithRegex<T extends BaseRawMajor>(
+    allMajors: T[],
+    query: string, 
+) {
+    const regexPattern = query.split("").join(".*?");
+    const regex = new RegExp(regexPattern, "i");  // 'i' 标志表示忽略大小写
 
-	return allMajors.filter((major) => {
-		return regex.test(major[searchField]);
-	});
-};
+    return allMajors.filter((major) => {
+        return regex.test(major.full_name as string);
+    })
+}
 
-const parseMajorInfo = (
-	searchMode: ModeOptions,
-	results: rawMajor[] | rawStarMajor[] | rawUacMajor[]
-): CacMajor[] | StarMajor[] | UacMajor[] => {
-	switch (searchMode) {
-		case "cac":
-			return parseCacMajorInfo(results as rawCacMajor[]);
-		case "star":
-			return parseStarMajorInfo(results as rawStarMajor[]);
-		case "uac":
-			return parseUacMajorInfo(results as rawUacMajor[]);
-		default:
-			return [];
-	}
-};
-
-const parseCacMajorInfo = (results: rawCacMajor[]): CacMajor[] => {
+const parseCacMajorInfo = (results: RawCacMajor[]): CacMajor[] => {
 	return results.map((r) => {
-		const code = r["校系名稱及代碼"].match(/\d/g);
 		return {
-			university: r.university!,
-			code: code ? code.join("") : "000000",
-			fullName: r["校系名稱及代碼"]!,
-			numRecruit: r["招生名額"]!,
-			numReview: r["預計甄試人數"]!,
-			numIsland: r["離島外加名額"]!,
-			date: r["指定項目甄試日期"]!,
-			url: r["科系校系分則網址"]!,
-			unewsUrl: r["大學問網址"]!,
+			university: r.university_code!,
+			key: r.key!,
+			fullName: r.universities.full_name! + r.full_name!,
+			numRecruit: String(r.recruit!),
+			numReview: String(r.expected_candidate!),
+			numOutlying: r.outlying!,
+			date: r.review_date!,
+			url: r.url!,
 		};
 	});
 };
 
-const parseStarMajorInfo = (results: rawStarMajor[]): StarMajor[] => {
+const parseStarMajorInfo = (results: RawStarMajor[]): StarMajor[] => {
 	return results.map((r) => {
-		const code = r["校系名稱及代碼"].match(/\d/g);
 		return {
-			university: r.university!,
-			code: code ? code.join("") : "000000",
-			fullName: r["校系名稱及代碼"]!,
-			numRecruit: r["招生名額"]!,
-			numExtra: r["外加名額"]!,
-			field: r["學群類別"]!,
-			numChoice: r["招生名額各學群可選填志願數"]!,
-			numExtraChoice: r["外加名額各學群可選填志願數"]!,
-			url: r["校系分則詳細資料"]!,
-			unewsUrl: r["大學問網址"]!,
+			university: r.university_code!,
+			key: r.key!,
+			fullName: r.universities.full_name! + r.full_name!,
+			numRecruit: r.recruit!,
+			numExtra: r.additional_quota_allowed!,
+			field: r.group!,
+			numChoice: r.quota_allowed!,
+			numExtraChoice: r.additional_quota_allowed!,
+			url: r.url!,
 		};
 	});
 };
 
-const parseUacMajorInfo = (results: rawUacMajor[]): UacMajor[] => {
+const parseUacMajorInfo = (results: RawUacMajor[]): UacMajor[] => {
 	return results.map((r) => {
 		return {
-			university: r.university!,
-			code: r.校系代碼!,
-			fullName: r.校系名稱!,
-			orders: [r["順序 1"]!, r["順序 2"]!, r["順序 3"]!, r["順序 4"]!, r["順序 5"]!],
-			referScore: r.學測採計!,
-			englishListening: r.英聽!,
-			url: r.校系分則!,
-			lastYearScore: r.去年分數!,
+			university: r.university_code!,
+			key: r.key!,
+			fullName: r.universities.full_name! + r.full_name!,
+			orders: [r.order1!, r.order2!, r.order3!, r.order4!, r.order5!],
+			referScore: r.ceec_test!,
+			englishListening: r.english_listening!,
+			url: r.redirect_url!,
+			lastYearScore: r.last_year!,
 		};
 	});
 };

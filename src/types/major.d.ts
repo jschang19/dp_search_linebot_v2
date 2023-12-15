@@ -1,17 +1,18 @@
+
 type CacMajor = {
-	code: string;
+	key: string;
 	fullName: string;
 	numRecruit: string;
 	numReview: string;
-	numIsland: string;
+	numOutlying: string;
 	date: string;
 	url: string;
-	unewsUrl: string;
 	university: string;
 };
 
+
 type StarMajor = {
-	code: string;
+	key: string;
 	fullName: string;
 	numRecruit: string;
 	numExtra: string;
@@ -19,12 +20,12 @@ type StarMajor = {
 	numExtraChoice: string;
 	field: string;
 	url: string;
-	unewsUrl: string;
 	university: string;
 };
 
+
 type UacMajor = {
-	code: string;
+	key: string;
 	fullName: string;
 	orders: string[];
 	referScore: string;
@@ -34,48 +35,55 @@ type UacMajor = {
 	university: string;
 };
 
-type rawMajor = {
-	university: string;
-	[keyof: string]: string;
-};
+type BaseRawMajor = {
+	full_name: string;
+	key: string;
+	university_code: string;
+	view_count: number;
+	universities: {
+		full_name: string;
+	};
+  };  
 
-type rawCacMajor = {
-	校系代碼: string;
-	招生名額: string;
-	預計甄試人數: string;
-	離島外加名額: string;
-	指定項目甄試日期: string;
-	科系校系分則網址: string;
-	大學問網址: string;
-	校系分則詳細資料: string;
-} & rawMajor;
-
-type rawStarMajor = {
-	校系名稱及代碼: string;
-	招生名額: string;
-	外加名額: string;
-	學群類別: string;
-	招生名額各學群可選填志願數: string;
-	外加名額各學群可選填志願數: string;
-	校系分則詳細資料: string;
-	大學問網址: string;
-} & rawMajor;
-
-type rawUacMajor = {
-	校系名稱: string;
-	校系代碼: string;
-	"順序 1": string;
-	"順序 2": string;
-	"順序 3": string;
-	"順序 4": string;
-	"順序 5": string;
-	學測採計: string;
-	英聽: string;
-	校系分則: string;
-	去年分數: string;
-} & rawMajor;
+  type RawCacMajor = BaseRawMajor & {
+	aboriginal: string;
+	expected_candidate: number;
+	fee: number;
+	gender_requirement: string;
+	has_exam: string;
+	outlying: string;
+	recruit: number;
+	review_date: string;
+	support_measure: string;
+	type: string;
+	url: string;
+	vision: string;
+  };
+  
+  type RawStarMajor = BaseRawMajor & {
+	additional_quota_allowed: string;
+	group: string;
+	additional_recruit: string;
+	quota_allowed: string;
+	recruit: string;
+	url: string;
+  };
+  
+  type RawUacMajor = BaseRawMajor & {
+	ceec_test: string;
+	english_listening: string;
+	last_year: string;
+	order1: string;
+	order2: string;
+	order3: string;
+	order4: string;
+	order5: string;
+	redirect_url: string;
+  };
+  
 
 type ModeOptions = "cac" | "star" | "uac";
+type SearchColumn = "full_name" | "university_code" | "key";
 
 type StarRegulation = {
 	university: string;
@@ -84,13 +92,14 @@ type StarRegulation = {
 };
 
 export type {
+	BaseRawMajor,
 	CacMajor,
-	rawMajor,
 	StarMajor,
-	rawStarMajor,
+	RawStarMajor,
 	UacMajor,
-	rawUacMajor,
+	RawUacMajor,
 	ModeOptions,
-	rawCacMajor,
+	RawCacMajor,
 	StarRegulation,
+	SearchColumn,
 };
