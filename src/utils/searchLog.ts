@@ -12,7 +12,7 @@ export default async function addSearchLog(
 			line_id: userId,
 			type: searchMode,
 			keyword: searchKeyword,
-			major_Keys: majorKeys.length > 0 ? majorKeys : null,
+			major_keys: majorKeys.length > 0 ? majorKeys : null,
 		},
 	]);
 
