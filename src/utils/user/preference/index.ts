@@ -1,6 +1,7 @@
 import supabase from "@utils/supabase/createClient";
+import { ModeOptions } from "@/types/major";
 
-async function getPreferenceMode(userId: string) {
+async function getPreferenceMode(userId: string): Promise<ModeOptions | null> {
 	const { data, error } = await supabase.from("line_user_preferences").select("mode").eq("line_id", userId);
 
 	if (error) {
@@ -11,7 +12,7 @@ async function getPreferenceMode(userId: string) {
 	return data[0]?.mode ?? null;
 }
 
-async function updatePreferenceMode(userId: string, newMode: string) {
+async function updatePreferenceMode(userId: string, newMode: ModeOptions) {
 	const { data, error } = await supabase
 		.from("line_user_preferences")
 		.upsert({

@@ -4,6 +4,7 @@ import { addSave, unSave, checkExceedLimit, checkHasSaved } from "@utils/user/sa
 import { updatePreferenceMode } from "@utils/user/preference";
 import logMessage from "@utils/cloudFuntionLog";
 import { MessageContent } from "@/config";
+import { ModeOptions } from "@/types/major";
 
 const handlePostback = async (event: PostbackEvent): Promise<Message | Message[] | null> => {
 	const userPostback = event.postback.data;
@@ -90,7 +91,7 @@ const handleSwitchMenu = async (userId: string, userPostback: string) => {
 				break;
 		}
 
-		await updatePreferenceMode(userId, mode);
+		await updatePreferenceMode(userId, mode as ModeOptions);
 		return TextMessage("已切換搜尋模式");
 	} catch (error: unknown) {
 		logMessage("ERROR", `handle switch menu error: ${error}`);

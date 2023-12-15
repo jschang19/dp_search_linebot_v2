@@ -1,12 +1,12 @@
 import { MessageEvent, TextEventMessage, Message } from "@line/bot-sdk";
 import { parseSearchTerms } from "@/utils/major/parse";
-import { searchInfo, getSavedMajorsInfo, getStarRegulation } from "@/utils/major/search";
+import { searchInfo, parseSavedMajor, getStarRegulation } from "@/utils/major/search";
 import { ResultMessage, StarResultMessage, UacResultMessage } from "@/utils/line/message/resultFlex";
 import { TextMessage } from "@/utils/line/message";
 import { MessageContent } from "@/config";
 import { CacMajor, ModeOptions, StarMajor, UacMajor } from "@/types/major";
 import logMessage from "@/utils/cloudFuntionLog";
-import { getSave } from "@utils/user/saves";
+import { getSaveMajors } from "@utils/user/saves";
 import { getPreferenceMode, updatePreferenceMode } from "@utils/user/preference";
 import addSearchLog from "@utils/searchLog";
 
@@ -42,7 +42,7 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 					userId,
 					parsedTerms.searchMode ?? preferenceMode ?? "cac",
 					userMessage,
-					majorResults.map((major) => major.code)
+					majorResults.map((major) => major.key)
 				);
 
 				if (!majorResults.length) return TextMessage(MessageContent.MajorNotFound);
@@ -81,9 +81,9 @@ const generateResponseMessage = (searchMode: string, results: (CacMajor | StarMa
 
 const handleGetSave = async (userId: string, type: ModeOptions) => {
 	try {
-		const savedMajors = await getSave(userId, type);
+		const savedMajors = await getSaveMajors(userId, type);
 		if (savedMajors.length === 0) return TextMessage(MessageContent.Save.NoSavedMajor);
-		const results = await getSavedMajorsInfo(savedMajors, type);
+		const results = parseSavedMajor(savedMajors, type);
 
 		return generateSavedResponseMessage(type, results);
 	} catch (error: unknown) {
