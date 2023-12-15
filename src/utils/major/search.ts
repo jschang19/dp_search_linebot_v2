@@ -1,4 +1,3 @@
-import { University } from "@/types/university";
 import {
 	BaseRawMajor,
 	CacMajor,
@@ -10,8 +9,6 @@ import {
 	RawCacMajor,
 	StarRegulation,
 } from "@/types/major";
-import readCSV from "@/utils/readCsv";
-import fs from "fs";
 import supabase from "@/utils/supabase/createClient";
 
 export const searchInfo = async ({
@@ -25,7 +22,6 @@ export const searchInfo = async ({
 }) => {
 	const allMajors = await getAllMajors(searchMode, universityCode);
 
-	// 这里可以根据实际情况添加类型检查
     if (!Array.isArray(allMajors) || allMajors.length === 0) {
         return [];
     }
@@ -45,9 +41,9 @@ export const searchInfo = async ({
 };
 
 export const getUniversityCode = async (university: string): Promise<string | null> => {
-	const results = (await readCSV("./data/code.csv")) as University[];
-	const { code } = results.find(({ search_word }) => search_word.includes(university)) || {};
-	return code || null;
+	const { data: result} = await supabase.from("universities").select("code").ilike("search_words", `%${university}%`).maybeSingle();
+	if (!result) return null;
+	return result.code;
 };
 
 export async function getAllMajors(searchMode: ModeOptions, universityCode: string) {
