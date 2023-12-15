@@ -31,11 +31,11 @@ describe("Test parseSavedMajor function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("numRecruit");
 		expect(actual[0]).toHaveProperty("numReview");
-		expect(actual[0]).toHaveProperty("numIsland");
+		expect(actual[0]).toHaveProperty("numOutlying");
 		expect(actual[0]).toHaveProperty("date");
 		expect(actual[0]).toHaveProperty("url");
 
@@ -68,7 +68,7 @@ describe("Test parseSavedMajor function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("numRecruit");
 		expect(actual[0]).toHaveProperty("numExtra");
@@ -109,7 +109,7 @@ describe("Test parseSavedMajor function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("orders");
 		expect(actual[0]).toHaveProperty("referScore");

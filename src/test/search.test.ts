@@ -20,26 +20,26 @@ describe("Test searchInfo function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("numRecruit");
 		expect(actual[0]).toHaveProperty("numReview");
-		expect(actual[0]).toHaveProperty("numIsland");
+		expect(actual[0]).toHaveProperty("numOutlying");
 		expect(actual[0]).toHaveProperty("date");
 		expect(actual[0]).toHaveProperty("url");
 
 		expect(typeof actual[0].university).toEqual("string");
-		expect(typeof actual[0].code).toEqual("string");
+		expect(typeof actual[0].key).toEqual("string");
 		expect(typeof actual[0].fullName).toEqual("string");
 		expect(typeof actual[0].numRecruit).toEqual("string");
 		expect(typeof actual[0].numReview).toEqual("string");
-		expect(typeof actual[0].numIsland).toEqual("string");
+		expect(typeof actual[0].numOutlying).toEqual("string");
 		expect(typeof actual[0].date).toEqual("string");
 		expect(typeof actual[0].url).toEqual("string");
 
 		expect(actual[0].university).toEqual("ntu");
 		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
-		expect(actual[0].code).toEqual("001552");
+		expect(actual[0].key).toEqual("001552");
 	});
 
 	it("should return correct search results in star", async () => {
@@ -53,7 +53,7 @@ describe("Test searchInfo function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("numRecruit");
 		expect(actual[0]).toHaveProperty("numExtra");
@@ -63,7 +63,7 @@ describe("Test searchInfo function", () => {
 		expect(actual[0]).toHaveProperty("url");
 
 		expect(typeof actual[0].university).toEqual("string");
-		expect(typeof actual[0].code).toEqual("string");
+		expect(typeof actual[0].key).toEqual("string");
 		expect(typeof actual[0].fullName).toEqual("string");
 		expect(typeof actual[0].numRecruit).toEqual("string");
 		expect(typeof actual[0].numExtra).toEqual("string");
@@ -74,7 +74,7 @@ describe("Test searchInfo function", () => {
 
 		expect(actual[0].university).toEqual("ntu");
 		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
-		expect(actual[0].code).toEqual("00139");
+		expect(actual[0].key).toEqual("00139");
 	});
 
 	it("should return correct search results in uac", async () => {
@@ -87,7 +87,7 @@ describe("Test searchInfo function", () => {
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
-		expect(actual[0]).toHaveProperty("code");
+		expect(actual[0]).toHaveProperty("key");
 		expect(actual[0]).toHaveProperty("fullName");
 		expect(actual[0]).toHaveProperty("orders");
 		expect(actual[0]).toHaveProperty("referScore");
@@ -96,7 +96,7 @@ describe("Test searchInfo function", () => {
 		expect(actual[0]).toHaveProperty("lastYearScore");
 
 		expect(typeof actual[0].university).toEqual("string");
-		expect(typeof actual[0].code).toEqual("string");
+		expect(typeof actual[0].key).toEqual("string");
 		expect(typeof actual[0].fullName).toEqual("string");
 		expect(typeof actual[0].orders).toEqual("object");
 		expect(typeof actual[0].referScore).toEqual("string");
@@ -106,7 +106,7 @@ describe("Test searchInfo function", () => {
 
 		expect(actual[0].university).toEqual("ntu");
 		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
-		expect(actual[0].code).toEqual("00128");
+		expect(actual[0].key).toEqual("00128");
 		expect(actual[0].orders).toBeInstanceOf(Array);
 		expect(actual[0].orders.length).toBeGreaterThan(0);
 	});

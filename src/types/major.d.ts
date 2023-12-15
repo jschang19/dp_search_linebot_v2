@@ -86,9 +86,9 @@ type ModeOptions = "cac" | "star" | "uac";
 type SearchColumn = "full_name" | "university_code" | "key";
 
 type StarRegulation = {
-	university: string;
-	percentage: string;
-	transfer: string;
+	university_code: string;
+	rank: string;
+	transfer_rule: string;
 };
 
 export type {
