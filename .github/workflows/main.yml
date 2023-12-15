@@ -20,6 +20,9 @@ jobs:
               yarn install
               yarn lint
               yarn test
+        env:
+             SUPABASE_SERVICE_KEY: "${{ secrets.SUPABASE_SERVICE_KEY }}"
+             SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
   deploy:
     needs: test
     permissions:
