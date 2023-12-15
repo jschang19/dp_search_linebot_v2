@@ -4,9 +4,9 @@ import { SavedData } from "@/types/user";
 
 async function getSaveMajors(userId: string, type: ModeOptions){
 	if( type === "cac"){
-		const { data, error } = await supabase
+		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id, university_id, cac_majors(*)")
+			.select("major_id")
 			.eq("line_id", userId)
 			.eq("type", type);
 
@@ -14,17 +14,14 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		return data.map((item) => {
-			return {
-				...item.cac_majors,
-			} 
-		}) as unknown as RawCacMajor[];
+		const { data } = await supabase.from('cac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		return data as unknown as RawCacMajor[];
 	}
 
 	else if( type === "star"){
-		const { data, error } = await supabase
+		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
-			.select("major_id, university_id, star_majors(*)")
+			.select("major_id")
 			.eq("line_id", userId)
 			.eq("type", type);
 
@@ -32,15 +29,12 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		return data.map((item) => {
-			return {
-				...item.star_majors,
-			};
-		}) as unknown as RawStarMajor[];
+		const { data } = await supabase.from('star_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		return data as unknown as RawStarMajor[];
 	}
 
 	else if ( type === "uac"){
-		const { data, error } = await supabase
+		const { data: saved_ids, error } = await supabase
 			.from("line_user_savelists")
 			.select("major_id, university_id, uac_majors(*)")
 			.eq("line_id", userId)
@@ -50,11 +44,8 @@ async function getSaveMajors(userId: string, type: ModeOptions){
 			throw error;
 		}
 
-		return data.map((item) => {
-			return {
-				...item.uac_majors,
-			};
-		}) as unknown as RawUacMajor[];
+		const { data } = await supabase.from('uac_majors').select("*, universities(full_name)").in("key", saved_ids.map((saved) => saved.major_id));
+		return data as unknown as RawUacMajor[];
 	}
 
 	else{
