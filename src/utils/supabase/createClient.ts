@@ -1,5 +1,6 @@
 import "dotenv/config";
 import { createClient } from "@supabase/supabase-js";
+import { Database } from "@/types/database";
 
 type SupabaseConfig = {
 	url: string;
@@ -29,6 +30,6 @@ const getSupabaseConfig = (): SupabaseConfig => {
 	};
 };
 
-const supabase = createClient(getSupabaseConfig().url, getSupabaseConfig().serviceKey, getSupabaseConfig().options);
+const supabase = createClient<Database>(getSupabaseConfig().url, getSupabaseConfig().serviceKey, getSupabaseConfig().options);
 
 export default supabase;
