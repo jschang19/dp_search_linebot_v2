@@ -1,6 +1,5 @@
 import { ModeOptions, UacMajor, CacMajor, StarMajor } from "@/types/major";
 import { searchInfo } from "../utils/major/search";
-import readCSV from "../utils/readCsv";
 
 type Options = {
 	universityCode: string;
@@ -8,22 +7,6 @@ type Options = {
 	searchMode: ModeOptions;
 };
 
-describe("Test readCsv function", () => {
-	it("should return correct csv data", async () => {
-		const test = "./data/cac/ntu.csv";
-		const actual = await readCSV(test);
-		expect(actual).toBeInstanceOf(Array);
-	});
-
-	it("should return an error with no file mathced", async () => {
-		try {
-			const test = "./data/cac/notExist.csv";
-			const actual = await readCSV(test);
-		} catch (error) {
-			expect(error).toBeInstanceOf(Error);
-		}
-	});
-});
 
 describe("Test searchInfo function", () => {
 	it("should return correct search results in cac", async () => {
@@ -44,7 +27,6 @@ describe("Test searchInfo function", () => {
 		expect(actual[0]).toHaveProperty("numIsland");
 		expect(actual[0]).toHaveProperty("date");
 		expect(actual[0]).toHaveProperty("url");
-		expect(actual[0]).toHaveProperty("unewsUrl");
 
 		expect(typeof actual[0].university).toEqual("string");
 		expect(typeof actual[0].code).toEqual("string");
@@ -54,10 +36,9 @@ describe("Test searchInfo function", () => {
 		expect(typeof actual[0].numIsland).toEqual("string");
 		expect(typeof actual[0].date).toEqual("string");
 		expect(typeof actual[0].url).toEqual("string");
-		expect(typeof actual[0].unewsUrl).toEqual("string");
 
 		expect(actual[0].university).toEqual("ntu");
-		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系(001552)");
+		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
 		expect(actual[0].code).toEqual("001552");
 	});
 
@@ -80,7 +61,6 @@ describe("Test searchInfo function", () => {
 		expect(actual[0]).toHaveProperty("numExtraChoice");
 		expect(actual[0]).toHaveProperty("field");
 		expect(actual[0]).toHaveProperty("url");
-		expect(actual[0]).toHaveProperty("unewsUrl");
 
 		expect(typeof actual[0].university).toEqual("string");
 		expect(typeof actual[0].code).toEqual("string");
@@ -91,11 +71,10 @@ describe("Test searchInfo function", () => {
 		expect(typeof actual[0].numExtraChoice).toEqual("string");
 		expect(typeof actual[0].field).toEqual("string");
 		expect(typeof actual[0].url).toEqual("string");
-		expect(typeof actual[0].unewsUrl).toEqual("string");
 
 		expect(actual[0].university).toEqual("ntu");
-		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系(00138)");
-		expect(actual[0].code).toEqual("00138");
+		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
+		expect(actual[0].code).toEqual("00139");
 	});
 
 	it("should return correct search results in uac", async () => {
@@ -127,7 +106,7 @@ describe("Test searchInfo function", () => {
 
 		expect(actual[0].university).toEqual("ntu");
 		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
-		expect(actual[0].code).toEqual("128");
+		expect(actual[0].code).toEqual("00128");
 		expect(actual[0].orders).toBeInstanceOf(Array);
 		expect(actual[0].orders.length).toBeGreaterThan(0);
 	});

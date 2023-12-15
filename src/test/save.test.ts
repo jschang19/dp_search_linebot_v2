@@ -1,14 +1,33 @@
 import { UacMajor, StarMajor } from "@/types/major";
-import { getSavedMajorsInfo } from "@utils/major/search";
+import { parseSavedMajor } from "@utils/major/search";
 
-describe("Test getSavedMajorsInfo function", () => {
+describe("Test parseSavedMajor function", () => {
 	it("should return correct cac saved majors info", async () => {
 		const test = [
-			{ universityId: "ntu", majorId: "001552" },
-			{ universityId: "ntu", majorId: "001592" },
+			{
+				aboriginal: '1',
+				expected_candidate: 1,
+				fee: 100,
+				full_name: '資訊管理學系',
+				gender_requirement: '無',
+				has_exam: '無',
+				key: '001552',
+				outlying: '0',
+				recruit: 1,
+				review_date: '2021-07-01',
+				support_measure: '無',
+				type: '一般',
+				university_code: 'ntu',
+				url: 'https://www.cac.edu.tw/apply108/system/108_college_list/NTU/NTU_128.html',
+				view_count: 0,
+				vision: '無',
+				universities: {
+					full_name: '國立臺灣大學',
+				},
+			}
 		];
 		const testType = "cac";
-		const actual = await getSavedMajorsInfo(test, testType);
+		const actual = parseSavedMajor(test, testType);
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
@@ -19,21 +38,33 @@ describe("Test getSavedMajorsInfo function", () => {
 		expect(actual[0]).toHaveProperty("numIsland");
 		expect(actual[0]).toHaveProperty("date");
 		expect(actual[0]).toHaveProperty("url");
-		expect(actual[0]).toHaveProperty("unewsUrl");
 
 		expect(actual[0].university).toEqual("ntu");
-		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系(001552)");
-		expect(actual[0].code).toEqual("001552");
+		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
+		expect(actual[0].key).toEqual("001552");
 	});
 
 	it("should return correct star saved majors info", async () => {
 		const test = [
-			{ universityId: "ntu", majorId: "00138" },
-			{ universityId: "ntu", majorId: "00139" },
+			{
+				additional_quota_allowed: '無',
+				additional_recruit: '無',
+				full_name: '資訊管理學系',
+				group: '二類',
+				key: '00138',
+				quota_allowed: '無',
+				recruit: "1",
+				university_code: 'ntu',
+				url: 'https://www.cac.edu.tw/apply108/system/108_college_list/NTU/NTU_128.html',
+				view_count: 0,
+				universities: {
+					full_name: '國立臺灣大學',
+				},
+			  }
 		];
 		const testType = "star";
 
-		const actual = (await getSavedMajorsInfo(test, testType)) as StarMajor[];
+		const actual = parseSavedMajor(test, testType);
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
@@ -45,21 +76,36 @@ describe("Test getSavedMajorsInfo function", () => {
 		expect(actual[0]).toHaveProperty("numExtraChoice");
 		expect(actual[0]).toHaveProperty("field");
 		expect(actual[0]).toHaveProperty("url");
-		expect(actual[0]).toHaveProperty("unewsUrl");
 
 		expect(actual[0].university).toEqual("ntu");
-		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系(00138)");
-		expect(actual[0].code).toEqual("00138");
+		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
+		expect(actual[0].key).toEqual("00138");
 	});
 
 	it("should return correct uac saved majors info", async () => {
 		const test = [
-			{ universityId: "ntu", majorId: "128" },
-			{ universityId: "ntu", majorId: "129" },
+			{
+				ceec_test: "否",
+				english_listening: "無",
+				full_name: "資訊管理學系",
+				key: "128",
+				last_year: "https://www.cac.edu.tw/apply108/system/108_college_list/NTU/NTU_128.html",
+				order1: "1",
+				order2: "2",
+				order3: "3",
+				order4: "4",
+				order5: "5",
+				redirect_url: "https://www.cac.edu.tw/apply108/system/108_college_list/NTU/NTU_128.html",
+				university_code: "ntu",
+				view_count: 0,
+				universities: {
+					full_name: "國立臺灣大學",
+				},
+			  }
 		];
 
 		const testType = "uac";
-		const actual = (await getSavedMajorsInfo(test, testType)) as UacMajor[];
+		const actual = parseSavedMajor(test, testType) as UacMajor[];
 		expect(actual).toBeInstanceOf(Array);
 		expect(actual.length).toBeGreaterThan(0);
 		expect(actual[0]).toHaveProperty("university");
@@ -73,7 +119,7 @@ describe("Test getSavedMajorsInfo function", () => {
 
 		expect(actual[0].university).toEqual("ntu");
 		expect(actual[0].fullName).toEqual("國立臺灣大學資訊管理學系");
-		expect(actual[0].code).toEqual("128");
+		expect(actual[0].key).toEqual("128");
 
 		expect(actual[0].orders).toBeInstanceOf(Array);
 		expect(actual[0].orders.length).toBeGreaterThan(0);
