@@ -21,7 +21,7 @@ jobs:
               yarn lint
               yarn test
         env:
-             SUPABASE_SERVICE_KEY: "${{ secrets.SUPABASE_SERVICE_KEY }}"
+             SUPABASE_SERVICE_KEY: "${{ secrets.SUPABASE_ANON_KEY }}"
              SUPABASE_URL: "${{ secrets.SUPABASE_URL }}"
   deploy:
     needs: test
@@ -38,7 +38,7 @@ jobs:
             cache: "yarn"
       - name: Google Auth
         id: auth
-        uses: "google-github-actions/auth@v4"
+        uses: "google-github-actions/auth@v2"
         with:
           token_format: "access_token"
           workload_identity_provider: "${{ secrets.WIF_PROVIDER }}"
