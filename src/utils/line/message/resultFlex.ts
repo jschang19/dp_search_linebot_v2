@@ -1,11 +1,11 @@
 import { FlexBubble, FlexMessage } from "@line/bot-sdk";
 import { CacMajor, StarMajor, UacMajor } from "@/types/major";
-import { setGoogleCalendarURL, setPortfolioURL, setUniversityTWURL } from "@/utils/setUrl";
+import { setGoogleCalendarURL, setUniversityTWURL } from "@/utils/setUrl";
 import { ColorScheme } from "@/config";
 
 export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = false): FlexMessage {
 	const bubbles: FlexBubble[] = extractedResults.map((result: CacMajor, index) => {
-		const { university, key, fullName, numRecruit, numReview, numOutlying, date, url } = result;
+		const { university, key, fullName, numRecruit, numReview, numOutlying, date, url, portfolioGuideUrl } = result;
 
 		return {
 			type: "bubble",
@@ -170,8 +170,8 @@ export function ResultMessage(extractedResults: CacMajor[], isSaved: boolean = f
 						color: ColorScheme.primary,
 						action: {
 							type: "uri",
-							label: "學習歷程參採項目",
-							uri: setPortfolioURL(fullName, key),
+							label: "審查資料準備指引",
+							uri: portfolioGuideUrl ?? "https://www.cac.edu.tw/apply114/guide.php"
 						},
 						margin: "sm",
 					},
