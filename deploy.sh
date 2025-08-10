@@ -1,14 +1,14 @@
 echo "Deploying to gcloud..."
 
-gcloud functions deploy shawn_cat_line \
---gen2 \
---runtime=nodejs18 \
---region=asia-east1 \
---source=. \
---max-instances=3 \
---entry-point=handleRequest \
---trigger-http \
+gcloud run deploy shawn-cat-line \
+--source . \
+--function handleRequest \
+--region asia-east1 \
 --allow-unauthenticated \
---no-user-output-enabled
+--no-traffic \
+&& gcloud run services update-traffic shawn-cat-line \
+--to-latest \
+--region asia-east1
+
 
 echo "Deployed to gcloud!"

@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc && tsc-alias",
     "start": "functions-framework --target=handleRequest",
-    "prestart": "yarn run build",
-    "gcp-build": "yarn run build",
+    "prestart": "pnpm run build",
+    "gcp-build": "pnpm run build",
     "deploy": "sh deploy.sh",
     "test": "jest",
     "clean": "tsc --build --clean",

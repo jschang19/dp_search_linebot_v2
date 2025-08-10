@@ -51,7 +51,18 @@ export async function getAllMajors(searchMode: ModeOptions, universityCode: stri
 	// then parse the csv file to get the major info
 	switch (searchMode) {
 		case "cac":{
-			const { data } = await supabase.from('cac_majors').select("*, universities(full_name)").eq('university_code', universityCode);
+			const { data } = await supabase
+				.from('cac_majors')
+				.select(`
+					*,
+					universities!inner(
+						full_name,
+						key,
+						guide_url
+					)
+				`)
+				.eq('university_code', universityCode)
+
 			return data as RawCacMajor[];
 		}
 		case "star":{
@@ -131,6 +142,7 @@ const parseCacMajorInfo = (results: RawCacMajor[]): CacMajor[] => {
 			university: r.university_code!,
 			key: r.key!,
 			fullName: r.universities.full_name! + r.full_name!,
+			portfolioGuideUrl: r.universities.guide_url,
 			numRecruit: String(r.recruit!),
 			numReview: String(r.expected_candidate!),
 			numOutlying: r.outlying!,
@@ -166,7 +178,8 @@ const parseUacMajorInfo = (results: RawUacMajor[]): UacMajor[] => {
 			referScore: r.ceec_test!,
 			englishListening: r.english_listening!,
 			url: r.redirect_url!,
-			lastYearScore: r.last_year!,
+			lastYearScore: r.last_year!.replace("_111.html", "_113.html"), // hotfix to update last year score
 		};
 	});
 };
+

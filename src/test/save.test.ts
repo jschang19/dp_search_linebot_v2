@@ -23,6 +23,7 @@ describe("Test parseSavedMajor function", () => {
 				vision: '無',
 				universities: {
 					full_name: '國立臺灣大學',
+					guide_url: 'https://www.ntu.edu.tw/files/14-1000-1000-1.pdf',
 				},
 			}
 		];
@@ -59,6 +60,7 @@ describe("Test parseSavedMajor function", () => {
 				view_count: 0,
 				universities: {
 					full_name: '國立臺灣大學',
+					guide_url: 'https://www.ntu.edu.tw/files/14-1000-1000-1.pdf',
 				},
 			  }
 		];
@@ -100,6 +102,7 @@ describe("Test parseSavedMajor function", () => {
 				view_count: 0,
 				universities: {
 					full_name: "國立臺灣大學",
+					guide_url: 'https://www.ntu.edu.tw/files/14-1000-1000-1.pdf',
 				},
 			  }
 		];

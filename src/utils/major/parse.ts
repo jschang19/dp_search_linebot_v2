@@ -1,28 +1,52 @@
 import { ModeOptions } from "@/types/major";
 import { getUniversityCode } from "./search";
 
+const SPECIAL_WORD = '中山';
+
 export const parseSearchTerms = async (userMessage: string) => {
 	const searchMode = extractSearchMode(userMessage);
-
 	if (searchMode) {
 		userMessage = removeKeywords(userMessage);
 	}
 
-	const university = extractUniversity(userMessage);
+	if(userMessage.startsWith("國立")) {
+		userMessage = userMessage.replace("國立", "");
+	}
+
+	let university = extractUniversity(userMessage);
+	let universityCode: string | null = null;
+
+	// Differentiate between nsysu and csmu using regex
+	const regex = new RegExp(`${SPECIAL_WORD}(醫)?`);
+	const match = userMessage.match(regex);
+
+	if (match) {
+		if (match[1]) {
+			// 中山醫學大學
+			universityCode = 'csmu';
+			university = determineCsmuName(userMessage);
+
+		} else {
+			universityCode = 'nsysu'; // 中山大學
+		}
+	} else {
+		universityCode = await getUniversityCode(university);
+	}
+
 	const major = extractMajor(userMessage, university);
-	const universityCode = await getUniversityCode(university);
 
 	return {
 		university,
 		universityCode,
 		major,
-		searchMode: searchMode,
+		searchMode,
 	};
 };
 
 const extractUniversity = (message: string): string => {
 	message = message.replace("台", "臺");
-	const universityRegex = /(.*?)大學/;
+	// remove national
+	const universityRegex = /(?:國立)?(.*?)大學/;
 	const match = message.match(universityRegex);
 	return match ? match[0] : message.slice(0, 2);
 };
@@ -71,4 +95,23 @@ const removeKeywords = (message: string): string => {
 	}
 
 	return message.trim(); // 返回已移除關鍵字的消息
+};
+
+
+const determineCsmuName = (message: string): string => {
+ // first check if is 中山醫學系
+ // if not, then check if is 中山醫學大學 in the message
+ // if not treat it as 中山醫
+ const NORMAL_CSMU_NAME = "中山醫";
+ const CSMU_MEDICAL_NAME = "中山醫學大學";
+ const CSMU_MEDICAL_DEPARTMENT_NAME = "中山醫學系";
+
+ if (message.includes(CSMU_MEDICAL_DEPARTMENT_NAME)) {
+	// the department is medical, we set the code to csmu already
+	return NORMAL_CSMU_NAME.slice(0, 2);
+ } else if (message.includes(CSMU_MEDICAL_NAME)) {
+	return CSMU_MEDICAL_NAME;
+ } else {
+	return NORMAL_CSMU_NAME;
+ }
 };

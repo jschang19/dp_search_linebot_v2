@@ -2,6 +2,7 @@
 type CacMajor = {
 	key: string;
 	fullName: string;
+	portfolioGuideUrl?: string | null;
 	numRecruit: string;
 	numReview: string;
 	numOutlying: string;
@@ -42,6 +43,7 @@ type BaseRawMajor = {
 	view_count: number;
 	universities: {
 		full_name: string;
+		guide_url: string | null;
 	};
   };  
 
