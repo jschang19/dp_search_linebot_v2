@@ -45,6 +45,7 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 					majorResults.map((major) => major.key)
 				);
 
+
 				if (!majorResults.length) return TextMessage(MessageContent.MajorNotFound);
 
 				return generateResponseMessage(parsedTerms.searchMode ?? preferenceMode ?? "cac", majorResults);
@@ -59,8 +60,8 @@ const handleText = async (event: MessageEvent): Promise<Message | Message[] | nu
 const generateResponseMessage = async (searchMode: string, results: (CacMajor | StarMajor | UacMajor)[]) => {
 	const countMessage = TextMessage(`以下是找到的校系結果`);
 
-	if (results!.length > 7) {
-		results = results!.slice(0, 7);
+	if (results.length > 7) {
+		results = results.slice(0, 7);
 	}
 
 	switch (searchMode) {
